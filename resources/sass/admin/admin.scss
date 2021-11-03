@@ -1,0 +1,21 @@
+// Variables
+@import "variables";
+
+// Vendor
+@import "vendor/index";
+@import '~@fortawesome/fontawesome-free/css/all.css';
+// Your own, project specific styles
+@import "styles/index";
+
+.menu-admin-container {
+    margin-top: -20px;
+    .menu-admin {
+        #tree {
+            padding:10px;
+            border: 1px solid #7adddd;
+        }
+        #data {
+            clear: none;
+        }
+    }
+}
