@@ -1,0 +1,14 @@
+{
+	"admin.admin-user.actions.edit_profile": "Profile",
+	"brackets/admin-ui::admin.btn.search": "Search",
+	"brackets/admin-ui::admin.placeholder.search": "Search",
+	"brackets/admin-auth::admin.login.title": "Login",
+	"brackets/admin-auth::admin.login.sign_in_text": "Login Data",
+	"brackets/admin-auth::admin.auth_global.email": "Email",
+	"brackets/admin-auth::admin.auth_global.password": "Password",
+	"brackets/admin-auth::admin.login.button": "Login",
+	"brackets/admin-auth::admin.login.forgot_password": "forgot password",
+	"brackets/admin-ui::admin.index.no_items": "No  data",
+	"brackets/admin-ui::admin.index.try_changing_items": "try changing items",
+	"brackets/admin-ui::admin.pagination.overview": "no paging"
+}

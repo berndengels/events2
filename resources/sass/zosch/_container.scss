@@ -1,0 +1,292 @@
+.container {
+	//position: fixed;
+	height: auto;
+	min-height: 100%;
+	background-color: $bgColor;
+
+	.card {
+		margin-top: 20px;
+		background-color: transparent;
+		border-radius: 20px;
+
+		.card-header {
+			background: linear-gradient( #000, $color );
+			color: $color;
+		}
+		.card-body {
+			color: $color;
+			form {
+				a.btn-link {
+					color: $linkColor;
+				}
+			}
+		}
+	}
+	.header {
+	}
+	.footer {
+		.pager {
+			position: fixed;
+			bottom: 8px;
+			right: 10px;
+			@include media("<tablet") {
+				left: 10px;
+				right: auto;
+				max-width: 50%;
+			}
+			border: 1px solid yellow;
+		}
+	}
+
+	.content {
+		color: $color;
+		display: flex;
+		height: auto;
+		margin-top: 60px;
+		min-height: 100vh;
+		padding: 10px 0 20px 0;
+
+		.page {
+			h3 {
+				color: inherit;
+			}
+			.page-body {
+				color: inherit !important;
+				font-family: $font-family-sans-serif !important;
+				*:not(a) {
+					color: inherit !important;
+					font-family: $font-family-sans-serif !important;
+				}
+				a {
+					color: $linkColor;
+				}
+			}
+		}
+		.static-page {
+			#map {
+				height: 60%;
+				border: 1px solid #7adddd;
+			}
+		}
+		.eventContainer {
+			.event {
+				float: left;
+				clear: none;
+				height: auto;
+				padding: 0;
+				margin: 0;
+
+				.eventContent {
+					.collapseToggle {
+						color: $color;
+						.eventHeader {
+							float: left;
+							clear: none;
+							height: 100px;
+							max-height: 150px;
+							padding: 0;
+							margin: 0;
+							background: linear-gradient( #000, $color );
+
+							.subHeader {
+								color: $colorSubHeader;
+								font-weight: bold;
+								font-size: 1.5rem;
+								@include media("<tablet") {
+									font-size: 1.0rem;
+								}
+
+								.category {
+									display: inline-block;
+									float: right;
+									clear: none;
+									color: $colorEventCategory;
+									font-weight: bold;
+									letter-spacing: 0.3rem;
+									text-transform: uppercase;
+								}
+							}
+							.theme {
+								span {
+									display: inline-block;
+									color: #fff;
+									background-color: #f00;
+									border: none;
+									padding: 0 0.5rem;
+									border-radius: 0.2rem;
+									font-weight: bold;
+									color: $colorEventTheme;
+								}
+							}
+							.title {
+								div {
+									margin: 0;
+									padding: 5px 5px 0 10px;
+									color: $colorEventTitle;
+									font-size: 1.2rem;
+									@include media("<tablet") {
+										font-size: 1rem;
+									}
+								}
+
+								div.subtitle {
+									font-size: 1.4rem;
+									@include media("<tablet") {
+										font-size: 1rem;
+									}
+								}
+							}
+							button.btn {
+								position: absolute;
+								font-size: 1.0rem;
+								display: block;
+								right: 0;
+								bottom: 0;
+								height: 1.5rem;
+								margin: 0;
+								color: #fff;
+								background-color: transparent;
+								padding: 0 10px 0 10px;
+								border-top-left-radius: 10px;
+								border-top-right-radius: 0;
+								border-bottom-left-radius: 0;
+								border-bottom-right-radius: 10px;
+								border: 1px solid #fff;
+								border-right: none;
+								border-bottom: none;
+								font-weight: bold;
+							}
+							button.btn:hover {
+								color: $red;
+							}
+						}
+					}
+
+					float: left;
+					clear: both;
+					height: auto;
+					//min-height: 100px;
+					padding: 0;
+					//                    margin-bottom: 5px;
+					border: 2px solid $bgColor;
+					border-radius: 10px;
+					border-bottom-left-radius: 0;
+					overflow: hidden;
+
+					.loaderWrapper {
+						height: 100%;
+						width: 100%;
+						vertical-align: middle;
+						img.loader {
+							width: 80px;
+							height: 80px;
+							margin: auto;
+							margin-top: 10px;
+						}
+					}
+					.eventBody {
+						font-size: 1.0rem;
+						width: 100%;
+						height: auto;
+						//max-height: 500px;
+						float: left;
+						clear: left;
+						padding: 0;
+						margin: 10px 0 0 0;
+						overflow: hidden;
+						border: 2px solid $color;
+						border-bottom-left-radius: 10px;
+						border-bottom-right-radius: 10px;
+
+						.imageWrapper {
+							background-color: #000;
+							img {
+								height: 300px;
+								@include media("<tablet") {
+									height: auto;
+									max-width: 100%;
+								}
+							}
+						}
+						.carousel {
+							width: 100%;
+							height: auto;
+							padding: 0;
+							margin: 0;
+							background-color: #000;
+							overflow: hidden;
+							@include media(">=tablet") {
+								height: 300px;
+							}
+							@include media("<tablet") {
+								height: 200px;
+							}
+							.carousel-inner {
+								white-space: nowrap;
+								overflow: hidden;
+
+								.carousel-item {
+									clear: none;
+									img {
+										clear: none;
+										height: auto;
+										z-index: 10000;
+										@include media(">=tablet") {
+											height: 300px;
+										}
+										@include media("<tablet") {
+											height: 200px;
+											width: auto;
+											max-width: 100%;
+										}
+									}
+									.carousel-caption {
+										color:#ffe924;
+										text-shadow: 0 0 3px #f00, 0 0 5px #00f;
+									}
+								}
+							}
+						}
+						div.subtitle {
+							font-size: 1.2rem;
+							color: $color;
+						}
+						.text {
+							color: $color;
+							font-size: 1.2rem;
+							@include media("<tablet") {
+								font-size: 1rem;
+							}
+							img {
+								width: auto;
+								height: auto;
+								max-width: 100%;
+							}
+						}
+						.links {
+							color: $linkColor;
+							font-size: 1.2rem;
+							@include media("<tablet") {
+								font-size: 1rem;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		form {
+			.g-recaptcha {
+				float: right;
+				clear: none;
+				_margin-top: -10px;
+			}
+			.form-group {
+				.captcha-error {
+					color: #c00 !important;
+					font-size: 1.2rem;
+				}
+			}
+		}
+	}
+}

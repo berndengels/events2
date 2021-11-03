@@ -1,0 +1,16 @@
+import './admin-user';
+import './profile-edit-profile';
+import './profile-edit-password';
+import './category';
+import './theme';
+import './event-template';
+import './event-periodic';
+import './page';
+import './event';
+import './role';
+import './permission';
+import './address';
+import './music-style';
+import './message';
+import './news';
+import './address-category';

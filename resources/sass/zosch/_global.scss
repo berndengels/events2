@@ -1,0 +1,41 @@
+
+html, body {
+	height: 100vh;
+	font-family: $font-family-sans-serif;
+	font-weight: 200;
+	margin: 0;
+	background-color: $bgColor;
+}
+a {
+	color: $linkColor;
+}
+a:hover {
+	color: red;
+}
+strong {
+	font-weight: 800;
+}
+img {
+	@extend .img-fluid;
+}
+td {
+	border-top: none !important;
+}
+pre {
+	color: #444;
+}
+.img-responsive {
+	display: inline-block;
+}
+.embed-responsive-wrapper {
+	margin: 0 -10px 0 -10px;
+	padding: 0;
+}
+form {
+	.error {
+		color: #c00;
+	}
+	.inline-space > :not(template) {
+		margin-right: 1.25rem;
+	}
+}
