@@ -41,8 +41,6 @@ class ContactController extends BaseController
             $users = $query->pluck('email');
         }
 
-//        $users = ['engels@goldenacker.de'];
-
 		$notifyBooker = new NotifyBooker($message);
 
 		try {
