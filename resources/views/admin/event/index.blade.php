@@ -36,7 +36,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm-auto form-inline d-inline-block" v-if="showThemeFilter">
+                            <!--div class="col-sm-auto form-inline d-inline-block" v-if="showThemeFilter">
                                 <div class="input-group">
                                     <select
                                         id="theme"
@@ -54,7 +54,7 @@
                                                 @click="filter('theme', themeSelect)"><i class="fa fa-search"></i> Theme</button>
                                     </span>
                                 </div>
-                            </div>
+                            </div-->
                         </form>
                         <a class="btn btn-primary btn-sm pull-right m-b-0 ml-2" href="{{ url('admin/events/export') }}" role="button"><i class="fa fa-file-excel-o"></i>&nbsp; {{ trans('admin.event.actions.export') }}</a>
                         <a class="btn btn-primary btn-spinner btn-sm pull-right m-b-0" href="{{ url('admin/events/create') }}" role="button"><i class="fa fa-plus"></i>&nbsp; {{ trans('admin.event.actions.create') }}</a>
