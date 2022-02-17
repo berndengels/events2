@@ -3,7 +3,6 @@
 @section('title', trans('admin.event.actions.index'))
 
 @section('body')
-
     <event-listing
         :data="{{ $data->toJson() }}"
         :url="'{{ url('admin/events') }}'"
@@ -11,7 +10,6 @@
         :themes="{{ $themes->toJson() }}"
         inline-template
     >
-
         <div class="row">
             <div class="col">
                 <div class="card">
