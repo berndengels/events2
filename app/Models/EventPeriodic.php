@@ -66,11 +66,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class EventPeriodic extends Model  implements HasMediaAlias
 {
-    use HasAdminUser;
-    use ProcessMediaTrait;
-    use AutoProcessMediaTrait;
-    use HasMediaCollectionsTrait;
-    use HasMediaThumbsTrait;
+	use HasAdminUser,
+		ProcessMediaTrait,
+		AutoProcessMediaTrait,
+		HasMediaCollectionsTrait,
+		HasMediaThumbsTrait;
 
     private $mediaName = 'images';
     protected $table = 'event_periodic';

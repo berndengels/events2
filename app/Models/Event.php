@@ -79,17 +79,21 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Event extends Model implements HasMediaAlias
 {
-    use HasAdminUser;
-    use ProcessMediaTrait;
-    use AutoProcessMediaTrait;
-    use HasMediaCollectionsTrait;
-    use HasMediaThumbsTrait;
+    use HasAdminUser,
+		ProcessMediaTrait,
+		AutoProcessMediaTrait,
+		HasMediaCollectionsTrait,
+		HasMediaThumbsTrait;
 
     private $mediaName = 'images';
     protected $table = 'event';
     protected $guarded = ['id'];
     protected $dates = ['created_at', 'updated_at', 'event_date'];
     protected $appends = ['resource_url','images','thumbnails','mediaName'];
+	protected $casts = [
+		'event_date' 	=> 'date:d.m.Y',
+		'event_time'	=> 'date:H:i',
+	];
 
     public function getEventDateAttribute( $value ) {
         return Carbon::create($value)->format('Y-m-d');
@@ -97,7 +101,7 @@ class Event extends Model implements HasMediaAlias
 
     public function getEventTimeAttribute( $value = null ) {
         if(!$value) {
-            return config('my.defaultEventTime').':00';
+            return config('my.defaultEventTime');
         }
         return $value;
     }

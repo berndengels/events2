@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api\SPA;
 
 use App\Models\Product;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\SpaProductResource;
+//use App\Http\Resources\SpaProductResource;
 
 class SpaProductController extends Controller
 {
-
+/*
     public function __construct()
     {
         SpaProductResource::withoutWrapping();
@@ -27,4 +27,5 @@ class SpaProductController extends Controller
         $result = new SpaProductResource($result);
         return response()->json($result);
     }
+*/
 }

@@ -72,4 +72,19 @@
     </div>
 </div>
 
-
+@if(isset($eventTemplate))
+    @include('brackets/admin-ui::admin.includes.media-uploader', [
+        'id'    => 'images',
+        'name'  => 'images',
+        'label' => 'Images',
+        'mediaCollection' => app(App\Models\EventTemplate::class)->getMediaCollection('images'),
+        'media' => $eventTemplate->getThumbs200ForCollection('images'),
+    ])
+@else
+    @include('brackets/admin-ui::admin.includes.media-uploader', [
+        'id'    => 'images',
+        'name'  => 'images',
+        'label' => 'Images',
+        'mediaCollection' => app(App\Models\EventTemplate::class)->getMediaCollection('images'),
+    ])
+@endif

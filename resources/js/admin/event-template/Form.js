@@ -8,6 +8,7 @@ Vue.component('event-template-form', {
     },
     data: function() {
         return {
+            mediaCollections: ['images'],
             form: {
                 theme_id:  '' ,
                 category_id:  '' ,

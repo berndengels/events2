@@ -236,6 +236,7 @@ class EventEntity extends Entity {
 		if( !$this->event_time || '' === trim($this->event_time)) {
 			$this->event_time = '20:00';
 		}
+		$this->event_time = Carbon::make($this->event_time)->format('H:i');
 		return str_replace('.',':', $this->event_time);
 	}
 

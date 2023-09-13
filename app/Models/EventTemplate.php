@@ -1,13 +1,18 @@
 <?php
 namespace App\Models;
 
-use App\Models\Ext\HasAdminUser;
 use Eloquent;
+use App\Models\Ext\HasAdminUser;
+use Brackets\Media\HasMedia\AutoProcessMediaTrait;
+use Brackets\Media\HasMedia\HasMediaCollectionsTrait;
+use Brackets\Media\HasMedia\HasMediaThumbsTrait;
+use Brackets\Media\HasMedia\ProcessMediaTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\MediaLibrary\HasMedia as HasMediaAlias;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * App\Models\EventTemplate
@@ -46,27 +51,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|EventTemplate whereUpdatedBy($value)
  * @mixin Eloquent
  */
-class EventTemplate extends Model
+class EventTemplate extends Model implements HasMediaAlias
 {
-    use HasAdminUser;
+	use HasAdminUser,
+		ProcessMediaTrait,
+		AutoProcessMediaTrait,
+		HasMediaCollectionsTrait,
+		HasMediaThumbsTrait;
 
     protected $table = 'event_template';
-    protected $fillable = [
-        'id',
-        'theme_id',
-        'category_id',
-        'title',
-        'subtitle',
-        'description',
-        'links',
-        'is_published',
-        'created_by',
-        'updated_by',
-        'created_at',
-        'updated_at',
-    ];
-    public $timestamps = false;
-    protected $appends = ['resource_url','images'];
+	private $mediaName = 'images';
+	protected $guarded = ['id'];
+	public $timestamps = false;
+	protected $appends = ['resource_url','images','thumbnails','mediaName'];
 
     /* ************************ ACCESSOR ************************* */
 
@@ -79,11 +76,23 @@ class EventTemplate extends Model
         $this->images = collect([]);
     }
 
-    public function getImagesAttribute() {
+	public function getMediaNameAttribute()
+	{
+		return $this->mediaName;
+	}
+
+	public function getImagesAttribute() {
         return collect([]);
     }
 
-    /**
+	public function getThumbnailsAttribute() {
+		if($this->hasMedia($this->mediaName)) {
+			return $this->getThumbs200ForCollection($this->mediaName);
+		}
+		return collect([]);
+	}
+
+	/**
      * @return BelongsTo
      */
     public function category()
@@ -98,4 +107,23 @@ class EventTemplate extends Model
     {
         return $this->belongsTo(Theme::class);
     }
+
+	public function registerMediaConversions( Media $media = null ): void
+	{
+		$this->autoRegisterThumb200();
+		$this->addMediaConversion('detail_hd')
+			->width(1920)
+			->height(1080)
+			->performOnCollections($this->mediaName);
+	}
+
+	public function registerMediaCollections(): void
+	{
+		$this->addMediaCollection($this->mediaName)
+			->useDisk('images')
+			->accepts('image/jpeg','image/jpg')
+			->maxNumberOfFiles(3) // Set the file count limit
+			->maxFilesize(5*1024*1024) // Set the file size limit
+		;
+	}
 }

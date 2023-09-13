@@ -15,14 +15,13 @@
             @endif
         </div>
 
-        @if ($event->getTheme())
-            <div class="theme">
-                <span>{{ $event->getTheme()->name }}</span>
-            </div>
-        @endif
-
         <div class="title m-0 p-0">
-            <div class="ml-2 p-0">
+            <div class="p-0">
+                @if ($event->getTheme())
+                    <div class="theme d-inline mr-2">
+                        <span>{{ $event->getTheme()->name }}</span>
+                    </div>
+                @endif
                 {{ $event->getTitle() }}
             </div>
         </div>
