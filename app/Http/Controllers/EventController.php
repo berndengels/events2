@@ -66,6 +66,7 @@ class EventController extends BaseController
 		/**
 		 * @var $feed Feed
 		 */
+/*
 		$feed = App::make('feed');
 //		$feed->setCache(180, 'laravelFeed');
 		$feed->setCustomView('public.templates.rss');
@@ -91,6 +92,8 @@ class EventController extends BaseController
 
 		header('Content-Type: application/rss+xml; charset=UTF-8', true);
 		return $feed->render('rss');
+*/
+		return null;
 	}
 
 	public function getActualEventsByDate($date)

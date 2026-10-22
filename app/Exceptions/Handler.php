@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-//use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Bengels\LaravelEmailExceptions\Exceptions\EmailHandler as ExceptionHandler;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+//use Bengels\LaravelEmailExceptions\Exceptions\EmailHandler as ExceptionHandler;
 
 /**
  * Class Handler

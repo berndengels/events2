@@ -176,7 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         /* extras */
-        Laravelium\Feed\FeedServiceProvider::class,
+//        Laravelium\Feed\FeedServiceProvider::class,
         App\Providers\ViewServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
         Kris\LaravelFormBuilder\FormBuilderServiceProvider::class,
@@ -184,7 +184,8 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
         Anhskohbo\NoCaptcha\NoCaptchaServiceProvider::class,
-        MisterPhilip\MaintenanceMode\MaintenanceModeServiceProvider::class,
+//		Biscolab\ReCaptcha\ReCaptchaServiceProvider::class,
+		MisterPhilip\MaintenanceMode\MaintenanceModeServiceProvider::class,
         MisterPhilip\MaintenanceMode\MaintenanceCommandServiceProvider::class,
         Srmklive\PayPal\Providers\PayPalServiceProvider::class,
     ],
@@ -239,7 +240,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         /***********    extras  ***************/
-        'Feed'  => Laravelium\Feed\Feed::class,
+//        'Feed'  => Laravelium\Feed\Feed::class,
         'FormBuilder'   => Kris\LaravelFormBuilder\Facades\FormBuilder::class,
         'NoCaptcha'     => Anhskohbo\NoCaptcha\Facades\NoCaptcha::class,
         'Agent'         => Jenssegers\Agent\Facades\Agent::class,
@@ -247,7 +248,7 @@ return [
 		'Curl'			=> Ixudra\Curl\Facades\Curl::class,
 		'Newsletter' 	=> Spatie\Newsletter\NewsletterFacade::class,
         'PayPal'        => Srmklive\PayPal\Facades\PayPal::class,
-        'PDF'           => Barryvdh\DomPDF\Facade::class,
+//        'PDF'           => Barryvdh\DomPDF\Facade::class,
     ],
 
 ];

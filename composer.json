@@ -1,72 +1,83 @@
 {
-    "name": "laravel/laravel",
+    "name": "laravel/events",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "Web Event Manager",
     "keywords": [
         "framework",
         "laravel"
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.3|^8.0",
-        "anhskohbo/no-captcha": "^3.3",
-        "barryvdh/laravel-dompdf": "^0.9.0",
-        "bepsvpt/secure-headers": "^7.0",
-        "berndengels/laravel8-email-exceptions": "^1.0",
-        "brackets/craftable": "^7.0",
-        "bumbummen99/shoppingcart": "^3.0",
-        "dompdf/dompdf": "^1",
-        "eluceo/ical": "^0.16.1",
-        "fideloper/proxy": "^4.4",
-        "friendsofphp/php-cs-fixer": "^2.17",
-        "fruitcake/laravel-cors": "^2.0",
+        "php": "^8.2",
+        "anhskohbo/no-captcha": "*",
+        "berndengels/laravel-email-exceptions": "*",
+        "eluceo/ical": "*",
+        "eternicode/bootstrap-datepicker": "*",
+        "fruitcake/laravel-cors": "*",
         "garygreen/pretty-routes": "^1.0",
-        "guzzlehttp/guzzle": "^7.0.1",
-        "ixudra/curl": "^6.21",
-        "kalnoy/nestedset": "^5.0",
-        "kris/laravel-form-builder": "^1.40",
-        "laravel/cashier": "^12.6",
-        "laravel/framework": "8.16",
-        "laravel/telescope": "^4.3",
-        "laravel/tinker": "^2.5",
-        "laravel/ui": "^3.1",
-        "laravelium/feed": "^8.0",
-        "lavary/laravel-menu": "^1.7",
-        "misterphilip/maintenance-mode": "^2.0",
-        "phpstan/phpstan": "^0.12.62",
-        "spatie/laravel-db-snapshots": "^1.7",
-        "spatie/laravel-newsletter": "^4.9",
-        "spatie/laravel-webhook-client": "^2.7",
-        "spatie/tax-calculator": "^0.1.1",
-        "srmklive/paypal": "^1.0",
-        "swiftmailer/swiftmailer": "^6.2"
+        "guzzlehttp/guzzle": "*",
+        "intervention/image": "*",
+        "ixudra/curl": "*",
+        "jenssegers/agent": "*",
+        "kalnoy/nestedset": "*",
+        "kris/laravel-form-builder": "*",
+        "kyslik/column-sortable": "*",
+        "laravel/cashier": "*",
+        "laravel/framework": "v10.0.0",
+        "laravel/sanctum": "*",
+        "laravel/scout": "*",
+        "laravel/tinker": "*",
+        "laravel/ui": "*",
+        "lavary/laravel-menu": "*",
+        "misterphilip/maintenance-mode": "*",
+        "nesbot/carbon": "*",
+        "protonemedia/laravel-form-components": "*",
+        "spatie/db-dumper": "*",
+        "spatie/laravel-db-snapshots": "*",
+        "spatie/laravel-newsletter": "*",
+        "spatie/laravel-permission": "*",
+        "srmklive/paypal": "*",
+        "symfony/process": "*"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": "^2.8",
-        "brackets/admin-generator": "^6.0",
-        "facade/ignition": "^2.5",
-        "fakerphp/faker": "^1.9.1",
-        "mockery/mockery": "^1.4.2",
-        "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9.3.3"
+        "barryvdh/laravel-debugbar": "*",
+        "barryvdh/laravel-ide-helper": "^2.15",
+        "fakerphp/faker": "*",
+        "laravel/dusk": "*",
+        "laravel/envoy": "^2.10",
+        "laravel/telescope": "*",
+        "mockery/mockery": "*",
+        "nunomaduro/collision": "*",
+        "orchestra/testbench": "*",
+        "phpunit/phpunit": "*",
+        "squizlabs/php_codesniffer": "*"
     },
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "robloach/component-installer": true
+        }
     },
     "extra": {
         "laravel": {
             "dont-discover": [
+                "laravel/telescope"
             ]
         }
     },
     "autoload": {
+        "files": [
+            "app/helpers.php"
+        ],
         "psr-4": {
-            "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
-        }
+            "App\\": "app/"
+        },
+        "classmap": [
+            "database/seeders",
+            "database/factories"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
