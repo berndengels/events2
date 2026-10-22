@@ -93,6 +93,14 @@ class EventTemplate extends Model implements HasMediaAlias
 	}
 
 	/**
+	 * @return BelongsTo
+	 */
+	public function events()
+	{
+		return $this->hasMany(Event::class);
+	}
+
+	/**
      * @return BelongsTo
      */
     public function category()

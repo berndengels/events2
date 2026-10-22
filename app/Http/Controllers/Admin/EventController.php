@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\EventTemplate;
+use App\Models\Media;
 use Exception;
 use App\Models\Event;
 use App\Models\Theme;
@@ -45,6 +47,7 @@ class EventController extends Controller
             // set columns to query
             [
                 'id',
+				'template_id',
                 'theme_id',
                 'category_id',
                 'title',
@@ -101,6 +104,7 @@ class EventController extends Controller
         return view('admin.event.create', [
             'categories'    => Category::all(['id', 'name']),
             'themes'        => Theme::all(['id', 'name']),
+			'templates'		=> EventTemplate::all(),
         ]);
     }
 
@@ -114,9 +118,22 @@ class EventController extends Controller
     {
         // Sanitize input
         $sanitized = $request->getSanitized();
-        // Store the Event
-        $event = Event::create($sanitized);
-
+		// Store the Event
+		$event = Event::create($sanitized);
+/*
+		if($sanitized['template_id'] > 0) {
+			$template = EventTemplate::find($sanitized['template_id']);
+			if($template->media && $template->media->count() > 0) {
+				foreach ($template->media as $image) {
+					$img = $image->getAttributes();
+					unset($img['id'], $img['created_at'], $img['updated_at'], $img['custom_properties'], $img['generated_conversions'], $img['responsive_images'], $img['manipulations']);
+					$img['model_type'] = Event::class;
+//					$img['model_id'] = $event->id;
+					$event->media()->create($img);
+				}
+			}
+		}
+*/
         if ($request->ajax()) {
             return ['redirect' => url('admin/events'), 'message' => trans('brackets/admin-ui::admin.operation.succeeded')];
         }

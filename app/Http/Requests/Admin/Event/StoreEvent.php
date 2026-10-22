@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Event;
 
 use App\Http\Requests\Admin\ext\HasCategory;
 use App\Http\Requests\Admin\ext\HasTheme;
+use App\Models\EventTemplate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
@@ -29,6 +30,7 @@ class StoreEvent extends FormRequest
     public function rules(): array
     {
         return [
+			'template_id'	=> '',
             'theme_id' => '',
             'category_id' => ['required'],
             'title' => ['required', 'string'],
@@ -42,7 +44,7 @@ class StoreEvent extends FormRequest
         ];
     }
 
-    /**
+	/**
      * Modify input data
      *
      * @return array

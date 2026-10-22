@@ -1,17 +1,19 @@
 import AppForm from '../app-components/Form/AppForm';
 
 Vue.component('event-form', {
-    props: ['categories', 'themes'],
+    props: ['templates','categories', 'themes'],
     mixins: [AppForm],
     beforeCreate() {
         delete $.ajaxSettings.headers["X-CSRF-TOKEN"]
     },
-    data: function() {
+    data: function(){
         return {
             category: '',
             theme: '',
+            template: '',
             mediaCollections: ['images'],
             form: {
+                template_id: '',
                 theme_id:  '',
                 category_id:  '',
                 title:  '',
@@ -21,7 +23,7 @@ Vue.component('event-form', {
                 event_date:  '',
                 event_time:  '',
                 price:  '',
-                is_published:  false ,
+                is_published:  false,
             },
             datePickerConfig: {
                 dateFormat: 'Y-m-d',
@@ -39,6 +41,30 @@ Vue.component('event-form', {
                 dateFormat: 'H:i',
                 altInput: true,
                 altFormat: 'H:i',
+            }
+        }
+    },
+    methods: {
+        loadTemplate(e)
+        {
+            let v = e.target.value;
+            if(v) {
+                axios
+                    .get('/api/template/' + v)
+                    .then(resp => {
+                        console.info(resp.data);
+                        this.form = {
+                            ...this.form,
+                            theme_id: resp.data.theme_id,
+                            category_id:  resp.data.category_id,
+                            title:  resp.data.title,
+                            subtitle:  resp.data.subtitle,
+                            description:  resp.data.description,
+                            links:  resp.data.links,
+                        };
+                        this.mediaCollections = resp.data.mediaCollections;
+
+                    }).catch(err => console.error(err));
             }
         }
     }

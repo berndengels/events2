@@ -254,6 +254,7 @@ Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])
         Route::prefix('admin')
         ->namespace('App\Http\Controllers\Admin')
         ->group(static function () {
+			Route::get('/phpinfo', 'ServiceController@phpinfo')->name('admin.phpinfo');
             Route::prefix('menu')->group(static function () {
                 Route::get('/', 'MenuController@show')->name('admin.menuShow');
                 Route::get('edit', 'MenuController@edit')->name('admin.menuNew');

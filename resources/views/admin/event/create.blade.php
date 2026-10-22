@@ -8,6 +8,7 @@
                 :action="'{{ url('admin/events') }}'"
                 :categories="{{ $categories->toJson() }}"
                 :themes="{{ $themes->toJson() }}"
+                :templates="{{ $templates->toJson() }}"
                 v-cloak
                 inline-template
             >

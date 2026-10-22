@@ -48,6 +48,7 @@
                 @can('translation.index')
                 <li class="nav-item"><a class="nav-link" href="{{ url('admin/translations') }}"><i class="nav-icon icon-location-pin"></i> {{ __('Translations') }}</a></li>
                 @endcan
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.phpinfo') }}"><i class="nav-icon icon-location-pin"></i> {{ __('PHP-Info') }}</a></li>
             </ul>
 
             {{-- Do not delete me :) I'm also used for auto-generation menu items --}}

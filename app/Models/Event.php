@@ -14,6 +14,7 @@ use Brackets\Media\HasMedia\ProcessMediaTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use SebastianBergmann\Template\Template;
 use Spatie\MediaLibrary\HasMedia as HasMediaAlias;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -133,6 +134,15 @@ class Event extends Model implements HasMediaAlias
     }
 
     /* ************************ RELATIONS ************************* */
+
+
+	/**
+	 * @return BelongsTo
+	 */
+	public function template()
+	{
+		return $this->belongsTo(Template::class);
+	}
 
     /**
      * @return BelongsTo

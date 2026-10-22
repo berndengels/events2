@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\SPA\SpaPageController;
 use App\Http\Controllers\Api\SPA\SpaMusicStyleController;
 use App\Http\Controllers\Api\SPA\SpaContactController;
 use App\Http\Controllers\Api\SPA\SpaProductController;
+use App\Http\Controllers\Api\ApiEventTemplateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //Route::apiResource('events', 'ApiEventController');
 
 Route::get('events/{date?}', [ApiEventController::class, 'events']);
+Route::get('template/{eventTemplate}', [ApiEventTemplateController::class, 'get']);
 
 Route::group([
     'prefix'    => 'spa',

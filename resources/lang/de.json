@@ -10,5 +10,9 @@
 	"brackets/admin-auth::admin.login.forgot_password": "Passwort vergessen",
 	"brackets/admin-ui::admin.index.no_items": "Keine Daten",
 	"brackets/admin-ui::admin.index.try_changing_items": "Versuche andere Daten",
-	"brackets/admin-ui::admin.pagination.overview": "Pager nicht notwendig"
+	"brackets/admin-ui::admin.pagination.overview": "Pager nicht notwendig",
+	"EventTemplate": "Event Template",
+	"Select EventTemplate": "Von Template laden",
+	"max_number_of_files": "max. Anzahl an Dateien: :maxNumberOfFiles",
+	"max_size_pre_file": "max. Dateigröße: :maxFileSize MB"
 }

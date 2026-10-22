@@ -1,4 +1,19 @@
 
+<div class="form-group row align-items-center">
+    <label for="template_id" class="col-form-label text-md-right" :class="isFormLocalized ? 'col-md-4' : 'col-md-2'">{{ __('EventTemplate') }}</label>
+    <div :class="isFormLocalized ? 'col-md-4' : 'col-md-9 col-xl-8'">
+        <select id="template_id" name="template_id"
+                class="form-control"
+                v-validate="''"
+                v-model="form.template_id"
+                @change="loadTemplate"
+        >
+            <option value="">{{ __('Select EventTemplate') }}</option>
+            <option v-for="item in templates" :key="item.id" :value="item.id">@{{ item.title }}</option>
+        </select>
+    </div>
+</div>
+
 <div class="form-check row" :class="{'has-danger': errors.has('is_published'), 'has-success': fields.is_published && fields.is_published.valid }">
     <div class="ml-md-auto" :class="isFormLocalized ? 'col-md-8' : 'col-md-10'">
         <input class="form-check-input" id="is_published" type="checkbox" v-model="form.is_published" v-validate="''" data-vv-name="is_published"  name="is_published_fake_element">
@@ -113,7 +128,6 @@
     </div>
 </div>
 
-
 <div class="form-group row align-items-center" :class="{'has-danger': errors.has('price'), 'has-success': fields.price && fields.price.valid }">
     <label for="price" class="col-form-label text-md-right" :class="isFormLocalized ? 'col-md-4' : 'col-md-2'">{{ trans('admin.event.columns.price') }}</label>
         <div :class="isFormLocalized ? 'col-md-4' : 'col-md-9 col-xl-8'">
@@ -122,19 +136,13 @@
     </div>
 </div>
 
-@if(isset($event))
-    @include('brackets/admin-ui::admin.includes.media-uploader', [
-        'id'    => 'images',
-        'name'  => 'images',
-        'label' => 'Images',
-        'mediaCollection' => app(App\Models\Event::class)->getMediaCollection('images'),
-        'media' => $event->getThumbs200ForCollection('images'),
-    ])
-@else
-    @include('brackets/admin-ui::admin.includes.media-uploader', [
-        'id'    => 'images',
-        'name'  => 'images',
-        'label' => 'Images',
-        'mediaCollection' => app(App\Models\Event::class)->getMediaCollection('images'),
-    ])
-@endif
+<div id="media">
+    <span id="notice"></span>
+    @include('vendor.brackets.admin.includes.media-uploader', [
+		'id'    => 'images',
+		'name'  => 'images',
+		'label' => 'Images',
+		'mediaCollection' => app(App\Models\Event::class)->getMediaCollection('images'),
+		'media' => isset($event) ? $event->getThumbs200ForCollection('images') : null,
+	])
+</div>
