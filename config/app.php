@@ -176,7 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         /* extras */
-        Laravelium\Feed\FeedServiceProvider::class,
+//        Laravelium\Feed\FeedServiceProvider::class,
         App\Providers\ViewServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
         Lavary\Menu\ServiceProvider::class,
@@ -237,12 +237,12 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         /***********    extras  ***************/
-        'Feed'          => Laravelium\Feed\Feed::class,
+//        'Feed'          => Laravelium\Feed\Feed::class,
         'NoCaptcha'     => Anhskohbo\NoCaptcha\Facades\NoCaptcha::class,
         'Agent'         => Jenssegers\Agent\Facades\Agent::class,
         'Menu'          => Lavary\Menu\Facade::class,
 		'Curl'			=> Ixudra\Curl\Facades\Curl::class,
-        'PDF'           => Barryvdh\DomPDF\Facade::class,
+//        'PDF'           => Barryvdh\DomPDF\Facade::class,
     ],
 
 ];
