@@ -2,16 +2,20 @@
 
 namespace App\Models;
 
-use App\Models\Ext\HasAdminUser;
 use Eloquent;
+use App\Models\Image;
+use App\Models\Ext\HasUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use App\Repositories\EventPeriodicRepository;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Kyslik\ColumnSortable\Sortable;
 
 /**
- * App\Models\EventPeriodic
+ * Class EventPeriodic
  *
  * @property int $id
  * @property int|null $theme_id
@@ -22,24 +26,35 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $updated_by
  * @property string $title
  * @property string|null $subtitle
- * @property string|null $description
- * @property string|null $links
- * @property string $event_date
- * @property string $event_time
- * @property string|null $price
- * @property int $is_published
- * @property string|null $created_at
- * @property string|null $updated_at
- * @property-read Category $category
- * @property-read \Brackets\AdminAuth\Models\AdminUser $createdBy
- * @property-read mixed $resource_url
- * @property-read Collection|Image[] $images
+ * @property array $description
+ * @property array $links
+ * @property string|null $event_date
+ * @property string|null $event_time
+ * @property int|null $price
+ * @property Carbon $created_at
+ * @property Carbon|null $updated_at
+ * @property bool|null $is_published
+ * @property-read Collection<int, Audios> $audios
+ * @property-read int|null $audios_count
+ * @property-read Category|null $category
+ * @property-read AdminUser|null $createdBy
+ * @property-read mixed $description_sanitized
+ * @property-read mixed $description_text
+ * @property-read mixed $description_without_video
+ * @property-read mixed $event_dates
+ * @property-read mixed $period
+ * @property-read mixed $position
+ * @property-read mixed $weekday
+ * @property-read Collection<int, Images> $images
  * @property-read int|null $images_count
  * @property-read Theme|null $theme
- * @property-read \Brackets\AdminAuth\Models\AdminUser|null $updatedBy
+ * @property-read AdminUser|null $updatedBy
+ * @property-read Collection<int, Videos> $videos
+ * @property-read int|null $videos_count
  * @method static Builder|EventPeriodic newModelQuery()
  * @method static Builder|EventPeriodic newQuery()
  * @method static Builder|EventPeriodic query()
+ * @method static Builder|EventPeriodic sortable($defaultParameters = null)
  * @method static Builder|EventPeriodic whereCategoryId($value)
  * @method static Builder|EventPeriodic whereCreatedAt($value)
  * @method static Builder|EventPeriodic whereCreatedBy($value)
@@ -61,49 +76,53 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class EventPeriodic extends Model
 {
-    use HasAdminUser;
+	use Sortable, HasUser;
 
+    /**
+     * @var array
+     */
+    public $sortable = [
+		'category_id',
+		'title',
+		'created_at',
+	];
+
+    /**
+     * @var string
+     */
     protected $table = 'event_periodic';
-    protected $fillable = [
-        'id',
-        'theme_id',
-        'category_id',
-        'periodic_position',
-        'periodic_weekday',
-        'title',
-        'subtitle',
-        'description',
-        'links',
-        'event_date',
-        'event_time',
-        'is_published',
-        'created_by',
-        'updated_by',
+    protected $with = ['images','createdBy','updatedBy'];
+    /**
+     * @var array
+     */
+    protected $guarded = ['id'];
+    protected $casts = [
+        'is_published'  => 'bool',
     ];
-    public $timestamps = true;
-    protected $appends = ['resource_url','images'];
 
-    /* ************************ ACCESSOR ************************* */
-
-    public function getResourceUrlAttribute()
-    {
-        return url('/admin/event-periodics/'.$this->getKey());
-    }
-
-    public function setImagesAttribute() {
-        $this->images = collect([]);
-    }
-
-    public function getImagesAttribute() {
-        return collect([]);
-    }
+    /**
+     * @var array
+     */
+    protected $dates = ['created_at','updated_at'];
+    /**
+     * @var array
+     */
+    protected $appends = [
+        'event_dates',
+        'position',
+        'weekday',
+        'period',
+        'descriptionSanitized',
+        'descriptionText',
+        'descriptionWithoutVideo',
+    ];
 
     /**
      * @return BelongsTo
      */
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo('App\Models\Category');
     }
 
     /**
@@ -111,6 +130,109 @@ class EventPeriodic extends Model
      */
     public function theme()
     {
-        return $this->belongsTo(Theme::class);
+        return $this->belongsTo('App\Models\Theme');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function images()
+    {
+        return $this->hasMany('App\Models\Images');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function audios()
+    {
+        return $this->hasMany('App\Models\Audios');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function videos()
+    {
+        return $this->hasMany('App\Models\Videos');
+    }
+
+    /**
+     * @param string $value
+     * @return array
+     */
+    public function getLinksAttribute($value = '')
+    {
+        if('' !== $value) {
+			return collect(preg_split("/[\n\r]+/", $value));
+        }
+    }
+
+    public function getPositionAttribute()
+    {
+        $position = config('event.periodicPosition');
+        return $position[$this->periodic_position] ?? null;
+    }
+
+    public function getWeekdayAttribute()
+    {
+        $weekday = config('event.periodicWeekday');
+        return $weekday[$this->periodic_weekday] ?? null;
+    }
+
+    public function getPeriodAttribute()
+    {
+//        $weekday = config('event.periodicWeekday');
+        return $this->position .' '. $this->weekday;
+    }
+
+	/**
+	 * @param string $value
+	 * @return array
+	 */
+	public function getDescriptionAttribute($value = '')
+	{
+		if('' !== $value) {
+			return preg_replace(['/^<p>(<br[ ]?[\/]?>){1,}/i','/(<br[ ]?[\/]?>){1,}<\/p>$/i'],['<p>','</p>'], trim($value));
+		}
+	}
+
+	public function getDescriptionSanitizedAttribute()
+    {
+        if($this->description) {
+			$wrapper = '<div class="ratio ratio-16x9 m-0 p-0">%%</div>';
+            return preg_replace(
+                "/(<iframe[^>]+><\/iframe>)/i",
+                str_replace('%%','$1', $wrapper),
+                $this->description
+            );
+        }
+        return null;
+    }
+
+    public function getDescriptionTextAttribute()
+    {
+        if($this->description) {
+            return strip_tags(preg_replace('/<br[ ]?[\/]?>/i',"\n", $this->description));
+        }
+    }
+
+    public function getDescriptionWithoutVideoAttribute()
+    {
+        return preg_replace(
+            "/<iframe[^>]+>(.*)<\/iframe>/i",
+            '',
+            $this->description
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEventDatesAttribute()
+    {
+        $repo = new EventPeriodicRepository();
+        $data = $repo->getPeriodicDates($this, true, true);
+        return $data;
     }
 }

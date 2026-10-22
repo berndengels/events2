@@ -8,7 +8,7 @@
  */
 namespace App\Forms;
 
-use App\Models\Country;
+use App\ModelsOld\Country;
 use Kris\LaravelFormBuilder\Form;
 use Kris\LaravelFormBuilder\Field;
 

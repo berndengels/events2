@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Download;
+use App\ModelsOld\Download;
 use Exception;
 use Carbon\Carbon;
 use Laravel\Cashier\Invoice;

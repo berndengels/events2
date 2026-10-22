@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Webhook;
+use App\ModelsOld\Webhook;
 use App\Webhook\StripeWebhookProfile;
 use App\Webhook\MyDefaultRespondsTo;
 use App\Validators\StripeSignaturValidator;

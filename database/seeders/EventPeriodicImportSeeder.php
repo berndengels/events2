@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\EventPeriodic;
+use App\ModelsOld\EventPeriodic;
 use App\Libs\MySeedImporter as Importer;
 
 class EventPeriodicImportSeeder extends Importer

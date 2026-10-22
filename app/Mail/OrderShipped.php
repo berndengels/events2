@@ -2,8 +2,8 @@
 namespace App\Mail;
 
 use stdClass;
-use App\Models\Order;
-use App\Models\Customer;
+use App\ModelsOld\Order;
+use App\ModelsOld\Customer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;

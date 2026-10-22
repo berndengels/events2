@@ -1,210 +1,123 @@
 <?php
-
+/**
+ * UserController.php
+ *
+ * @author    Bernd Engels
+ * @created   28.02.19 17:17
+ * @copyright Webwerk Berlin GmbH
+ */
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\AddressExport;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Address\BulkDestroyAddress;
-use App\Http\Requests\Admin\Address\DestroyAddress;
-use App\Http\Requests\Admin\Address\IndexAddress;
-use App\Http\Requests\Admin\Address\StoreAddress;
-use App\Http\Requests\Admin\Address\UpdateAddress;
-use App\Models\Address;
-use App\Models\AddressCategory;
-use Brackets\AdminListing\Facades\AdminListing;
+use App\Forms\AddressCategoryFilterForm;
+use App\Http\Requests\AddressRequest;
+use App\ModelsOld\Address;
+use App\Forms\SearchForm;
+use App\Forms\AddressForm;
+use App\ModelsOld\Event;
+use App\Repositories\NewsletterRepository;
+use Carbon\Carbon;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Input;
+use Kris\LaravelFormBuilder\FormBuilder;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
+use Newsletter;
+use Throwable;
 
-class AddressController extends Controller
+class AddressController extends MainController
 {
+    use FormBuilderTrait;
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @param IndexAddress $request
-     * @return array|Factory|View
-     */
-    public function index(IndexAddress $request)
+    static protected $model	= Address::class;
+    static protected $form	= AddressForm::class;
+
+	protected function listAll( FormBuilder $formBuilder, Request $request ) {
+		$searchForm = $formBuilder->create(SearchForm::class, ['url' => route('admin.addressList')]);
+		$addressCategoryForm = $formBuilder->create(AddressCategoryFilterForm::class, ['url' => route('admin.addressList')]);
+
+		$addressCategory = $request->get('addressCategory');
+		$search = $request->get('search');
+
+		$data = Address::with('addressCategory')
+            ->when($search, function($query) use ($search) {
+                return $query->where('email','LIKE', "%${search}%");
+            })->when($addressCategory, function($query) use ($addressCategory) {
+                return $query->where('address_category_id', $addressCategory);
+            })
+			->sortable()
+			->paginate($this->paginationLimit)
+			->appends($request->except('page'))
+		;
+
+		return view('admin.addresses', [
+			'searchForm'			=> $searchForm,
+			'addressCategoryForm'	=> $addressCategoryForm,
+			'data'      => $data,
+			'addLink'   => $this->addLink,
+			'entity'    => $this->entity,
+			'title'     => Str::plural($this->title),
+		]);
+	}
+
+	public function show( $id ) {
+		$address = Address::find($id);
+		return view('admin.address-show', [
+			'data'      => $address,
+			'listLink'  => $this->listLink,
+			'entity'    => $this->entity,
+			'title'     => Str::plural($this->title),
+		]);
+	}
+
+	public function store(AddressRequest $request, $id = 0 )
     {
-        // create and AdminListing instance for a specific model and
-        $data = AdminListing::create(Address::class)->processRequestAndGet(
-            // pass the request with params
-            $request,
-            // set columns to query
-            ['id', 'address_category_id', 'email', 'token', 'info_on_changes'],
-            // set columns to searchIn
-            ['id', 'email', 'token'],
-            function (Builder $query) use ($request) {
-                $query->with('addressCategory');
-            }
-        );
-        if ($request->ajax()) {
-            if ($request->has('bulk')) {
-                return [
-                    'bulkItems' => $data->pluck('id')
-                ];
-            }
-            return ['data' => $data];
+        $validator = Validator::make($request->post(), $request->rules(), $request->messages());
+
+        if(!$validator->valid()) {
+            return redirect()->back()->withErrors($validator->errors())->withInput();
         }
 
-        return view('admin.address.index', [
-            'data' => $data,
-            'addressCategories' => AddressCategory::all(),
-        ]);
-    }
+        $entity = ($id > 0) ? Address::find($id) : new Address();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function create()
-    {
-        $this->authorize('admin.address.create');
+        $values = $request->validated();
+        $entity->address_category_id = $values['address_category_id'];
+        $entity->email  = $values['email'];
+        $entity->token	= Hash::make($entity->address_category_id.$entity->email);
 
-        return view('admin.address.create', [
-            'addressCategories' => AddressCategory::all(),
-        ]);
-    }
+        try {
+            $entity->saveOrFail();
+            $id = $entity->id;
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreAddress $request
-     * @return array|RedirectResponse|Redirector
-     */
-    public function store(StoreAddress $request)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Store the Address
-        $address = Address::create($sanitized);
-
-        if ($request->ajax()) {
-            return ['redirect' => url('admin/addresses'), 'message' => trans('brackets/admin-ui::admin.operation.succeeded')];
+			$repository = new NewsletterRepository();
+			$response = $repository->addMember($entity, true);
+        } catch (Exception $e) {
+            return back()->with('error','Fehler: '.$e->getMessage());
+        } catch (Throwable $e) {
+            return back()->with('error','Fehler: '.$e->getMessage());
         }
 
-        return redirect('admin/addresses');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Address $address
-     * @throws AuthorizationException
-     * @return void
-     */
-    public function show(Address $address)
-    {
-        $this->authorize('admin.address.show', $address);
-
-        // TODO your code goes here
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Address $address
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function edit(Address $address)
-    {
-        $this->authorize('admin.address.edit', $address);
-
-
-        return view('admin.address.edit', [
-            'address' => $address,
-            'addressCategories' => AddressCategory::all(),
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdateAddress $request
-     * @param Address $address
-     * @return array|RedirectResponse|Redirector
-     */
-    public function update(UpdateAddress $request, Address $address)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Update changed values Address
-        $address->update($sanitized);
-
-        if ($request->ajax()) {
-            return [
-                'redirect' => url('admin/addresses'),
-                'message' => trans('brackets/admin-ui::admin.operation.succeeded'),
-            ];
+        switch($request->submit) {
+            case 'save':
+                return back();
+            case 'saveAndBack':
+            default:
+                return redirect()->route('admin.addressList');
         }
-
-        return redirect('admin/addresses');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param DestroyAddress $request
-     * @param Address $address
-     * @throws Exception
-     * @return ResponseFactory|RedirectResponse|Response
-     */
-    public function destroy(DestroyAddress $request, Address $address)
-    {
-        $address->delete();
-
-        if ($request->ajax()) {
-            return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Remove the specified resources from storage.
-     *
-     * @param BulkDestroyAddress $request
-     * @throws Exception
-     * @return Response|bool
-     */
-    public function bulkDestroy(BulkDestroyAddress $request) : Response
-    {
-        DB::transaction(static function () use ($request) {
-            collect($request->data['ids'])
-                ->chunk(1000)
-                ->each(static function ($bulkChunk) {
-                    Address::whereIn('id', $bulkChunk)->delete();
-
-                    // TODO your code goes here
-                });
-        });
-
-        return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-    }
-
-    /**
-     * Export entities
-     *
-     * @return BinaryFileResponse|null
-     */
-    public function export(): ?BinaryFileResponse
-    {
-        return Excel::download(app(AddressExport::class), 'addresses.xlsx');
-    }
+	public function initialSubscribe()
+	{
+		$repository = new NewsletterRepository();
+		$addresses	= Address::all();
+		if($addresses->count()) {
+			foreach($addresses as $address) {
+				$repository->addMember($address, true);
+				sleep(1);
+			}
+		}
+	}
 }

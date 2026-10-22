@@ -8,7 +8,7 @@
  */
 namespace App\Forms;
 
-use App\Models\AddressCategory;
+use App\ModelsOld\AddressCategory;
 use Kris\LaravelFormBuilder\Form;
 use Kris\LaravelFormBuilder\Field;
 

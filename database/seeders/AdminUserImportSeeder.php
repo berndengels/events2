@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\AdminUser;
+use App\ModelsOld\AdminUser;
 use App\Libs\MySeedImporter as Importer;
 
 class AdminUserImportSeeder extends Importer

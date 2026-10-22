@@ -8,7 +8,7 @@
  */
 namespace App\Forms;
 
-use App\Models\Shipping;
+use App\ModelsOld\Shipping;
 use Kris\LaravelFormBuilder\Form;
 use Kris\LaravelFormBuilder\Field;
 

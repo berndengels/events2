@@ -2,64 +2,59 @@
 
 namespace App\Models;
 
+use App\Traits\Models\Sanitize;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
+use Kyslik\ColumnSortable\Sortable;
+use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Message
+ * App\Models\Address
  *
  * @property int $id
  * @property int|null $music_style_id
  * @property string $email
  * @property string $name
- * @property string $message
+ * @property string $msg
  * @property Carbon $created_at
- * @property-read mixed $resource_url
+ * @property-read MusicStyle|null $musicStyle
  * @method static Builder|Message newModelQuery()
  * @method static Builder|Message newQuery()
  * @method static Builder|Message query()
+ * @method static Builder|Message sortable($defaultParameters = null)
  * @method static Builder|Message whereCreatedAt($value)
  * @method static Builder|Message whereEmail($value)
  * @method static Builder|Message whereId($value)
- * @method static Builder|Message whereMessage($value)
+ * @method static Builder|Message whereMsg($value)
  * @method static Builder|Message whereMusicStyleId($value)
  * @method static Builder|Message whereName($value)
  * @mixin Eloquent
- * @property-read \App\Models\MusicStyle|null $musicStyle
  */
 class Message extends Model
 {
+	use Sortable, Sanitize;
+
     protected $table = 'message';
-    protected $fillable = [
-        'music_style_id',
-        'email',
-        'name',
-        'message',
-    ];
-    public $timestamps = false;
-    protected $dates = [
-        'created_at',
-    ];
-    protected $appends = ['resource_url'];
+    protected $guarded = ['id'];
 
-    public static function boot()
+	const UPDATED_AT = null;
+
+	public $sortable = [
+		'musicStyle',
+		'name',
+		'email',
+		'created_at',
+	];
+
+    public function setMsgAttribute($value)
     {
-        parent::boot();
-        static::creating(function ($model) {
-            $model->created_at = $model->freshTimestamp();
-        });
-   }
-    public function musicStyle()
-    {
-        return $this->belongsTo(MusicStyle::class);
+        $this->attributes['msg'] = $this->sanitize($value);
     }
 
-    /* ************************ ACCESSOR ************************* */
-
-    public function getResourceUrlAttribute()
-    {
-        return url('/admin/messages/'.$this->getKey());
-    }
+	public function musicStyle()
+	{
+		return $this->belongsTo(MusicStyle::class);
+	}
 }

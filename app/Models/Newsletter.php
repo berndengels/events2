@@ -1,10 +1,19 @@
 <?php
+/**
+ * Newsletter.php
+ *
+ * @author    Bernd Engels
+ * @created   15.06.19 12:50
+ * @copyright Webwerk Berlin GmbH
+ */
 
 namespace App\Models;
 
+use App\Models\Ext\HasUser;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -12,11 +21,13 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property int $tag_id
- * @property int $created_by
- * @property int|null $updated_by
- * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read mixed $resource_url
+ * @property int|null $updated_by
+ * @property Carbon $created_at
+ * @property int $created_by
+ * @property-read AdminUser|null $createdBy
+ * @property-read AddressCategory|null $tag
+ * @property-read AdminUser|null $updatedBy
  * @method static Builder|Newsletter newModelQuery()
  * @method static Builder|Newsletter newQuery()
  * @method static Builder|Newsletter query()
@@ -28,30 +39,24 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Newsletter whereUpdatedBy($value)
  * @mixin Eloquent
  */
-class Newsletter extends Model
-{
-    protected $table = 'newsletter';
+class Newsletter extends Model {
+	use HasUser;
 
-    protected $fillable = [
-        'tag_id',
-        'created_by',
-        'updated_by',
+	/**
+	 * @var string
+	 */
+	protected $table = 'newsletter';
+	/**
+	 * @var array
+	 */
+	protected $fillable = ['id'];
+	protected $dates = ['created_at','updated_at'];
 
-    ];
-
-
-    protected $dates = [
-        'created_at',
-        'updated_at',
-
-    ];
-
-    protected $appends = ['resource_url'];
-
-    /* ************************ ACCESSOR ************************* */
-
-    public function getResourceUrlAttribute()
-    {
-        return url('/admin/newsletters/'.$this->getKey());
-    }
+	/**
+	 * @return BelongsTo
+	 */
+	public function tag()
+	{
+		return $this->belongsTo(AddressCategory::class, 'tag_id', 'tag_id');
+	}
 }

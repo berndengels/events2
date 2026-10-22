@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Event;
-use App\Models\Theme;
-use App\Models\Category;
+use App\ModelsOld\Event;
+use App\ModelsOld\Theme;
+use App\ModelsOld\Category;
 use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------

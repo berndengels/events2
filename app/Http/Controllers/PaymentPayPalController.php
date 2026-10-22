@@ -1,13 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Order;
+use App\ModelsOld\Order;
 use Exception;
 use App\Helper\MyCart;
 use App\Libs\PayPal\PayPal;
 use App\Models\Webhook;
 use App\Models\Customer;
-use App\Models\Shipping;
+use App\ModelsOld\Shipping;
 use Illuminate\Http\Request;
 use Gloudemans\Shoppingcart\Cart;
 use App\Repositories\ShopRepository;

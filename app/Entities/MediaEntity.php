@@ -4,12 +4,10 @@
  *
  * @author    Bernd Engels
  * @created   02.07.19 19:31
- * @copyright Bernd Engels
+ * @copyright Webwerk Berlin GmbH
  */
 
 namespace App\Entities;
-
-use phpDocumentor\Reflection\Types\This;
 
 /**
  * Class MediaEntity
@@ -17,21 +15,29 @@ use phpDocumentor\Reflection\Types\This;
 class MediaEntity extends Entity {
 
     /**
-     * @var int
+     * @var
      */
     protected $id;
 	/**
 	 * @var string
 	 */
-	protected $file_name;
+	protected $internalName;
+	/**
+	 * @var string
+	 */
+	protected $externalName;
+	/**
+	 * @var string
+	 */
+	protected $title;
+	/**
+	 * @var string
+	 */
+	protected $extension;
 	/**
 	 * @var int
 	 */
-	protected $size;
-    /**
-     * @var string
-     */
-    protected $url;
+	protected $filesize;
 
     /**
      * @return mixed
@@ -52,55 +58,82 @@ class MediaEntity extends Entity {
     }
 
 	/**
-	 * @return int
+	 * @return string
 	 */
-	public function getSize() {
-		return $this->size;
+	public function getInternalName() {
+		return $this->internalName;
 	}
 
 	/**
-	 * @param int $size
+	 * @param string $internalName
 	 * @return $this
 	 */
-	public function setSize($size): self {
-		$this->size = $size;
+	public function setInternalName($internalName) {
+		$this->internalName = $internalName;
 		return $this;
 	}
 
-    /**
-     * @return string
-     */
-    public function getFileName(): string
-    {
-        return $this->file_name;
-    }
+	/**
+	 * @return string
+	 */
+	public function getExternalName() {
+		return $this->externalName;
+	}
 
-    /**
-     * @param string $file_name
-     * @return $this
-     */
-    public function setFileName(string $file_name): self
-    {
-        $this->file_name = $file_name;
-        return $this;
-    }
+	/**
+	 * @param string $externalName
+	 * @return $this
+	 */
+	public function setExternalName($externalName) {
+		$this->externalName = $externalName;
+		return $this;
+	}
 
-    /**
-     * @return string
-     */
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->title;
+	}
 
-    /**
-     * @param string $url
-     * @return $this
-     */
-    public function setUrl(string $url): self
-    {
-        $this->url = $url;
-        return $this;
-    }
+	/**
+	 * @param string $title
+	 * @return $this
+	 */
+	public function setTitle($title) {
+		$this->title = $title;
+		return $this;
+	}
 
+	/**
+	 * @return string
+	 */
+	public function getExtension() {
+		return $this->extension;
+	}
+
+	/**
+	 * @param string $extension
+	 * @return $this
+	 */
+	public function setExtension($extension) {
+		$this->extension = $extension;
+		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getFilesize() {
+		return $this->filesize;
+	}
+
+	/**
+	 * @param int $filesize
+	 * @return $this
+	 */
+	public function setFilesize($filesize) {
+		$this->filesize = $filesize;
+		return $this;
+	}
 }

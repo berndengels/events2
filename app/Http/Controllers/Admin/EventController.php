@@ -1,286 +1,221 @@
 <?php
-
+/**
+ * EventsController.php
+ *
+ * @author    Bernd Engels
+ * @created   30.01.19 18:55
+ * @copyright Webwerk Berlin GmbH
+ */
 namespace App\Http\Controllers\Admin;
 
 use Exception;
-use App\Models\Event;
-use App\Models\Theme;
-use App\Helper\MyDate;
-use App\Models\Category;
-use Illuminate\View\View;
-use App\Exports\EventExport;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Event\BulkDestroyEvent;
-use App\Http\Requests\Admin\Event\DestroyEvent;
-use App\Http\Requests\Admin\Event\IndexEvent;
-use App\Http\Requests\Admin\Event\StoreEvent;
-use App\Http\Requests\Admin\Event\UpdateEvent;
-use Brackets\AdminListing\Facades\AdminListing;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Forms\EventTemplateSelectForm;
+use App\Forms\SearchForm;
+use App\Http\Requests\EventRequest;
+use Illuminate\Support\Facades\Cache;
+use App\ModelsOld\EventPeriodic;
+use App\ModelsOld\EventTemplate;
+use Illuminate\Contracts\Support\Renderable;
+use App\ModelsOld\Event;
+use App\Repositories\EventRepository;
+use App\Repositories\EventPeriodicRepository;
+use App\Forms\EventForm;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Str;
+use Kris\LaravelFormBuilder\FormBuilder;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
 
-class EventController extends Controller
+class EventController extends MainController
 {
+    use FormBuilderTrait;
+
+    static protected $model = Event::class;
+    static protected $form	= EventForm::class;
 
     /**
-     * Display a listing of the resource.
+     * Show the application dashboard.
      *
-     * @param IndexEvent $request
-     * @return array|Factory|View
+     * @return Renderable
      */
-    public function index(IndexEvent $request)
-    {
-        // create and AdminListing instance for a specific model and
-        $data = AdminListing::create(Event::class)->processRequestAndGet(
-            // pass the request with params
-            $request,
-            // set columns to query
-            [
-                'id',
-                'theme_id',
-                'category_id',
-                'title',
-                'description',
-                'event_date',
-                'event_time',
-                'is_published',
-                'created_by',
-                'updated_by',
-            ],
-            // set columns to searchIn
-            ['id', 'title', 'description'],
-            function (Builder $query) use ($request) {
-                $query->with(['category','theme','createdBy','updatedBy']);
-                if($request->has('category')){
-                    $query->where('category_id', $request->get('category'));
-                }
-                if($request->has('theme')){
-                    $query->where('theme_id', $request->get('theme'));
-                }
-                $query
-                    ->whereDate('event_date','>=', MyDate::getUntilValidDate())
-                    ->orderBy('event_date', 'DESC')
-                ;
-            }
-        );
-
-        if ($request->ajax()) {
-            if ($request->has('bulk')) {
-                return [
-                    'bulkItems' => $data->pluck('id')
-                ];
-            }
-            return ['data' => $data];
-        }
-
-        return view('admin.event.index', [
-            'data'          => $data,
-            'categories'    => Category::all(['id', 'name']),
-            'themes'        => Theme::all(['id', 'name']),
+    public function listEvents(FormBuilder $formBuilder)
+	{
+		parent::index();
+        $data = EventRepository::getEventsSinceToday()
+			->paginate($this->paginationLimit)
+		;
+        return view('admin.events', [
+            'data'      => $data,
+            'addLink'   => $this->addLink,
+            'entity'    => $this->entity,
+            'title'     => Str::plural($this->title),
+			'templateSelectForm'	=> $formBuilder->create(EventTemplateSelectForm::class, ['url'	=> route('admin.eventTemplateSelect')]),
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function create()
-    {
-        $this->authorize('event.create');
+	public function edit( FormBuilder $formBuilder, $id = 0, $options = null ) {
+		parent::initReservedDates();
+        return parent::edit($formBuilder, $id, [
+			'dates'	=> $this->strReservedDates,
+		]);
+	}
 
-        return view('admin.event.create', [
-            'categories'    => Category::all(['id', 'name']),
-            'themes'        => Theme::all(['id', 'name']),
-        ]);
-    }
+	public function archive( FormBuilder $formBuilder, Request $request )
+	{
+		$data = EventRepository::getEventsUntilDate($this->today, $request->get('search'))
+			->sortable()
+			->paginate($this->paginationLimit)
+			->appends($request->except('page'))
+		;
+		$form = $formBuilder->create(SearchForm::class, ['url'	=> route('admin.eventArchiveSearch')]);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreEvent $request
-     * @return array|RedirectResponse|Redirector
-     */
-    public function store(StoreEvent $request)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-        // Store the Event
-        $event = Event::create($sanitized);
+		return view('admin.events', [
+			'searchForm'	=> $form,
+			'data'      	=> $data,
+			'addLink'   	=> $this->addLink,
+			'entity'    	=> $this->entity,
+			'title'     	=> 'Archiv',
+			'templateSelectForm'=> null,
+		]);
+	}
 
-        if ($request->ajax()) {
-            return ['redirect' => url('admin/events'), 'message' => trans('brackets/admin-ui::admin.operation.succeeded')];
-        }
+	public function checkForPeriodicDate( Request $request ) {
+		$date		= $request->post('date');
+		$repo		= new EventPeriodicRepository();
+        $entity		= $repo->getPeriodicEventByDate($date, true, true);
+		$response	= [
+            'date'		=> $date,
+			'entity'	=> ($entity) ? $entity->toArray() : null,
+		];
 
-        return redirect('admin/events');
-    }
+		return response()->json($response);
+	}
 
-    /**
-     * Display the specified resource.
-     *
-     * @param Event $event
-     * @throws AuthorizationException
-     * @return void
-     */
-    public function show(Event $event)
-    {
-        $this->authorize('event.show', $event);
+	public function override( FormBuilder $formBuilder, Request $request, $id = 0 )
+	{
+		parent::initReservedDates();
+		$eventPeriodicId    = $request->post('override');
+		$eventPeriodic      = EventPeriodic::find($eventPeriodicId);
+		$event = $id > 0 ? Event::find($id) : new Event();
 
-        // TODO your code goes here
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Event $event
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function edit(Event $event)
-    {
-        $this->authorize('event.edit', $event);
-        return view('admin.event.edit', [
-            'event'         => $event,
-            'categories'    => Category::all(['id', 'name']),
-            'themes'        => Theme::all(['id', 'name']),
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdateEvent $request
-     * @param Event $event
-     * @return array|RedirectResponse|Redirector
-     */
-    public function update(UpdateEvent $request, Event $event)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-        // Update changed values Event
-        $event->update($sanitized);
-
-        if ($request->ajax()) {
-            return [
-                'redirect' => url('admin/events'),
-                'message' => trans('brackets/admin-ui::admin.operation.succeeded'),
+        if( $eventPeriodicId > 0 && $eventPeriodic ) {
+            $attributes = [
+                'is_periodic' 	=> 1,
+                'title'			=> $eventPeriodic->title,
+                'subtitle'		=> $eventPeriodic->subtitle,
+                'description'	=> $eventPeriodic->description,
+                'category'		=> $eventPeriodic->category,
+                'theme'			=> $eventPeriodic->theme,
+                'images'		=> $eventPeriodic->images,
+                'event_time'	=> $eventPeriodic->event_time,
+                'event_date'	=> $request->post('event_date'),
+                'links'			=> $eventPeriodic->links->count() > 0 ? $eventPeriodic->links->join("\n") : '',
+                'override'		=> $eventPeriodicId,
             ];
+            $event->setRawAttributes($attributes);
         }
 
-        return redirect('admin/events');
+		$form  = $formBuilder->create(EventForm::class, ['model' => $event]);
+		$formOptions    = [
+			'id'        => $id,
+			'form'      => $form,
+			'title'     => $this->title,
+			'listLink'  => $this->listLink,
+			'dates' 	=> $this->strReservedDates,
+		];
+		return view('admin.form.'.$this->entity, $formOptions);
+	}
+
+    public function store(Request $httpRequest,EventRequest $request, $id = 0)
+    {
+		if(!$httpRequest->session()->get('eventStored')) {
+			try {
+				if((int) $id > 0) {
+					$event = Event::find($id);
+					$event->update($request->validated());
+				} else {
+					$saved = Event::create($request->validated());
+					$id = $saved->id;
+				}
+				Cache::forget($this->cacheEventKey);
+			} catch(Exception $e) {
+				return back()->with('error','Fehler: '.$e->getMessage());
+			}
+
+			$override = $request->post('override');
+			$template = $request->post('template');
+
+			$this->processImages($request, $id, $override, $template);
+		}
+
+		$httpRequest->session()->flash('eventStored', 1);
+
+		switch($request->submit) {
+			case 'save':
+				return redirect()->route('admin.eventEdit', ['id' => $id]);
+			case 'saveAndBack':
+			default:
+				return redirect()->route('admin.eventList');
+		}
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param DestroyEvent $request
-     * @param Event $event
-     * @throws Exception
-     * @return ResponseFactory|RedirectResponse|Response
-     */
-    public function destroy(DestroyEvent $request, Event $event)
-    {
-        $event->delete();
+	public function template(FormBuilder $formBuilder, Request $request ) {
+			$id = $request->post('eventTemplate');
 
-        if ($request->ajax()) {
-            return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-        }
+			if(!$id) {
+				return null;
+			}
 
-        return redirect()->back();
-    }
+			$template  = EventTemplate::find($id);
+			if($template) {
+				parent::initReservedDates();
+				$event = new Event();
 
-    /**
-     * Remove the specified resources from storage.
-     *
-     * @param BulkDestroyEvent $request
-     * @throws Exception
-     * @return Response|bool
-     */
-    public function bulkDestroy(BulkDestroyEvent $request) : Response
-    {
-        DB::transaction(static function () use ($request) {
-            collect($request->data['ids'])
-                ->chunk(1000)
-                ->each(static function ($bulkChunk) {
-                    Event::whereIn('id', $bulkChunk)->delete();
+				$attributes = [
+					'is_periodic' 	=> 0,
+					'title'			=> $template->title,
+					'subtitle'		=> $template->subtitle,
+					'description'	=> $template->description,
+					'links'			=> $template->links->count() > 0 ? $template->links->join("\n") : '',
+					'category'		=> $template->category,
+					'theme'			=> $template->theme,
+					'images'		=> $template->images,
+					'event_time'	=> $template->event_time,
+					'template'		=> $id,
+				];
 
-                    // TODO your code goes here
-                });
-        });
+				$event->setRawAttributes($attributes);
 
-        return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-    }
+				$form  = $formBuilder->create(EventForm::class, ['model' => $event]);
+				$data    = [
+					'id'        => null,
+					'form'      => $form,
+					'title'     => $this->title,
+					'listLink'  => $this->listLink,
+					'dates' 	=> $this->strReservedDates,
+				];
+				return view('admin.form.'.$this->entity, $data);
+			}
+	}
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @param IndexEvent $request
-     * @return array|Factory|View
-     */
-    public function archive(IndexEvent $request)
-    {
-        $data = AdminListing::create(Event::class)->processRequestAndGet(
-            $request,
-            // set columns to query
-            [
-                'id',
-                'theme_id',
-                'category_id',
-                'title',
-                'description',
-                'event_date',
-                'event_time',
-                'is_published',
-                'created_by',
-                'updated_by',
-            ],
-            // set columns to searchIn
-            ['id', 'title', 'description'],
-            function (Builder $query) use ($request) {
-                $query->with(['category','createdBy','updatedBy']);
-                if($request->has('category')){
-                    $query->where('category_id', $request->get('category'));
+    public function delete( $id ) {
+        $model  = static::$model;
+        if($model) {
+            /**
+             * @var $entity Model
+             */
+            $entity = $model::find($id);
+            if($entity) {
+                $entity->delete();
+                Cache::forget($this->cacheEventKey);
+                if(0 == $entity->is_periodic && isset($entity->images)) {
+                    $this->removeImages($entity->images);
                 }
-                if($request->has('fromDate')) {
-                    $query->whereDate('event_date', '>=', $request->get('fromDate'));
-                }
-                if($request->has('untilDate')) {
-                    $query->whereDate('event_date', '<=', $request->get('untilDate'));
-                }
+                return redirect()->route('admin.'.$this->entity.'List');
             }
-        );
-
-        if ($request->ajax()) {
-            if ($request->has('bulk')) {
-                return [
-                    'bulkItems' => $data->pluck('id')
-                ];
-            }
-            return ['data' => $data];
         }
-
-        return view('admin.event.archive', [
-            'data'          => $data,
-            'categories'    => Category::all(['id', 'name']),
-        ]);
+        return null;
     }
 
-    /**
-     * Export entities
-     *
-     * @return BinaryFileResponse|null
-     */
-    public function export(): ?BinaryFileResponse
-    {
-        return Excel::download(app(EventExport::class), 'events.xlsx');
-    }
 }

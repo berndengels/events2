@@ -19,7 +19,7 @@ class ContactEntity extends Entity {
 	/**
 	 * @var string
 	 */
-	protected $company = 'Schokoladen Berlin-Mitte';
+	protected $company = 'Zosch Berlin-Mitte';
 	/**
 	 * @var string
 	 */

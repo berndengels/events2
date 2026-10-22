@@ -2,9 +2,9 @@
 
 namespace App\Mail;
 
-use App\Models\AdminUser;
-use App\Models\Customer;
-use App\Models\Order;
+use App\ModelsOld\AdminUser;
+use App\ModelsOld\Customer;
+use App\ModelsOld\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;

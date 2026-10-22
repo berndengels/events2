@@ -2,7 +2,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use App\Models\ProductStock;
+use App\ModelsOld\ProductStock;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SpaProductStockResource extends JsonResource

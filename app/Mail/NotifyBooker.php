@@ -2,8 +2,8 @@
 
 namespace App\Mail;
 
-use App\Models\Message;
-use App\Models\MusicStyle;
+use App\ModelsOld\Message;
+use App\ModelsOld\MusicStyle;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;

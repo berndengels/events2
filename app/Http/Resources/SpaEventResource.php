@@ -3,8 +3,8 @@
 namespace App\Http\Resources;
 
 use App\Entities\ImageEntity;
-use App\Models\Event;
-use App\Models\Images;
+use App\ModelsOld\Event;
+use App\ModelsOld\Images;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

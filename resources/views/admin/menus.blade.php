@@ -1,14 +1,8 @@
-@extends('admin.layout.default')
 
-@section('title', 'Menu')
-@section('header')
-    @parent
-    <link type="text/css" rel="stylesheet" href="{{ asset('vendor/jstree/css/default/style.min.css') }}" />
-@endsection
+@extends('layouts.admin')
 
-@section('body')
-<!--
-    <div id="treeContainer" class="col-12 mh-100 sidenav" role="main">
+@section('content')
+    <div id="treeContainer" class="col-sm-12 mh-100 sidenav" role="main">
         <form id="menuControl" class="m-0 mb-2">
             <button id="create" type="button" class="btn btn-primary btn-sm text-center" title="Neuer Menupunkt"><i class="ion-md-create mr-sm-2"></i><span class="d-none d-sm-inline">New</span></button>
             <button id="checkTree" type="button" class="btn btn-primary btn-sm text-center" title="Struktur Überprüfen"><i class="ion-md-checkmark mr-sm-2"></i><span class="d-none d-sm-inline">Check</span></button>
@@ -16,185 +10,161 @@
             <button id="refresh" type="button" class="btn btn-primary btn-sm text-center" title="Erneut laden"><i class="ion-md-sync mr-sm-2"></i><span class="d-none d-sm-inline">Refresh</span></button>
         </form>
 
-        <div id="tree" class="col-3 mh-100"></div>
-        <div id="data" class="col-9 ml-1 mh-100 xs-clearfix sidenav">
-            <h5 class="info mt-2 mt-sm-0 ml-sm-2"></h5>
+        <div id="tree" class="col-12 col-sm-4 col-xl-2 mh-100"></div>
+        <div id="data" class="col-12 col-sm-8 p-0 col-xl-10 mh-100 xs-clearfix sidenav">
+            <h5 class="mt-2 mt-sm-0 ml-sm-2"></h5>
             {!! form($form) !!}
-        </div>
-    </div>
-//-->
-    <div class="row menu-admin-container">
-        <div class="col">
-            <div class="card menu-admin">
-                <div class="card-header mt-0">
-                    <h3 class="mt-0">Menu</h3>
-                </div>
-                <div class="card-body mt-0">
-                    <div class="card-block mt-0">
-                        <div class="row">
-                            <div class="col-12 col-lg-4 mh-100">
-                                <form id="menuControl" class="p-0 m-0 mb-2">
-                                    <button id="create" type="button" class="btn btn-primary btn-sm text-center" title="Neuer Menupunkt"><i class="ion-md-create mr-sm-2"></i><span class="d-none d-sm-inline">New</span></button>
-                                    <button id="checkTree" type="button" class="btn btn-primary btn-sm text-center" title="Struktur Überprüfen"><i class="ion-md-checkmark mr-sm-2"></i><span class="d-none d-sm-inline">Check</span></button>
-                                    <button id="fixTree" type="button" class="btn btn-primary btn-sm text-center" title="Struktur Reparieren"><i class="ion-md-hammer mr-sm-2"></i><span class="d-none d-sm-inline">Repair</span></button>
-                                    <button id="refresh" type="button" class="btn btn-primary btn-sm text-center" title="Erneut laden"><i class="ion-md-sync mr-sm-2"></i><span class="d-none d-sm-inline">Refresh</span></button>
-                                </form>
-                                <div id="tree" class="mh-100"></div>
-                            </div>
-                            <div class="col-12 col-lg-8 mh-100">
-                                <div id="data" class="ml-1 sidenav">
-                                    <h5 class="info mt-2 mt-sm-0 ml-sm-2"></h5>
-                                    {!! form($form) !!}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
     @include('components.modal')
 @endsection
 
-@section('bottom-scripts')
-    <script type="text/javascript" src="{{ asset('vendor/jstree/js/jstree.min.js') }}" charset="UTF-8"></script>
-    <script>
-    var operationRoute  = '/admin/menu/operation';
+@section('inline-scripts')
+<script>
+    const operationRoute  = '/admin/menus/operation';
 
     $(function () {
         var $tree = $('#tree');
         document.getElementById('frmMenu').reset();
-
-        $tree
-            .jstree({
-                'core': {
-                    'data': {
-                        'url': operationRoute + '/get_node',
-                        'method': 'post',
-                        'data': function (node) {
-//                            console.info(node);
-                            return { 'id': node.id };
+        $tree.jstree({
+                    'core': {
+                        'data': {
+                            'url': operationRoute + '/get_node',
+                            'method': 'post',
+                            'data': function (node) {
+                                return { 'id': node.id };
+                            }
+                        },
+                        'check_callback': true,
+                        'themes': {
+                            'responsive': true
                         }
                     },
-                    'check_callback': true,
-                    'themes': {
-                        'responsive': true
-                    }
-                },
-                'force_text': true,
-                'plugins': ['state','dnd','wholerow'],
-            })
-            .on('create_node.jstree', function (e, data) {
-                $.post( operationRoute + '/create_node', {
-                    'parent': '#' === data.parent ? 1 : data.parent,
-                    'position': data.position,
-                    'text': data.node.text,
-                }).done(function (d) {
-                        data.instance.set_id(data.node, d.id);
-                        $tree.jstree().deselect_node(d.parent);
-                        $tree.jstree().select_node(d.id);
-                        $('#btnRemove','#frmMenu').removeClass('d-none');
-                    })
-                    .fail(function () {
-                        data.instance.refresh();
-                    });
-            })
-            .on('move_node.jstree', function (e, data) {
-                $.post( operationRoute + '/move_node', {
-                        'id': data.node.id,
-                        'parent': '#' === data.parent ? null : data.parent,
-                        'old_parent': '#' === data.old_parent ? null : data.old_parent,
-                        'position': data.position,
-                        'old_position': data.old_position,
-                    })
-                    .done(function (d) {
-                    })
-                    .fail(function () {
-                        data.instance.refresh();
-                    });
-            })
-            .on('rename_node.jstree', function (e, data) {
-                $.post( operationRoute + '/rename_node', {
-                        'id': data.node.id,
-                        'text': data.node.text,
-                    })
-                    .fail(function () {
-                        data.instance.refresh();
-                    });
-            })
-            .on('refresh.jstree', function (e, data) {
-                $tree.jstree('deselect_all', true);
-            })
-            .on('delete_node.jstree', function (e, data) {
-                $.post( operationRoute + '/delete_node', {
-                        'id': data.node.id,
-                        'parent': '#' === data.parent ? null : data.parent,
-                    })
-                    .done(function(d) {
-                        $('#btnRemove','#frmMenu').removeClass('d-none').addClass('d-none');
-                    })
-                    .fail(function () {
-                        data.instance.refresh();
-                    });
-            })
-            .on('changed.jstree', function (e, data) {
-                if(data && data.selected && data.selected.length) {
-                    var inst = $('#tree').jstree(true),
-                        parent = inst.get_node(data.node.parent),
-                        position = $.inArray(data.node.id, parent.children);
+                    'force_text' : true,
+//                'plugins' : ['state','dnd','contextmenu','wholerow'],
+                    'plugins' : ['state','dnd','wholerow'],
+//                "contextmenu": { 'items': customMenu }
+                })
+                .on('create_node.jstree', function (e, data) {
+                    console.debug(data.node);
 
-                    $.post( operationRoute + '/get_content', {
-                            'id': data.selected.join(':'),
-                            'text': data.node.text,
-                            'position': position,
-                            'parent': parent.id,
+                    $.post( operationRoute + '/create_node', {
+                        'parent': '#' === data.parent ? 1 : data.parent,
+                        'position': data.position,
+                        'text': data.node.text,
+                    }).done(function (d) {
+                            data.instance.set_id(data.node, d.id);
+                            $tree.jstree().deselect_node(d.parent);
+                            $tree.jstree().select_node(d.id);
+                            $('#btnRemove','#frmMenu').removeClass('d-none');
+                        })
+                        .fail(function () {
+                            data.instance.refresh();
+                        });
+                })
+                .on('move_node.jstree', function (e, data) {
+                    console.info('onMove position: ' + data.position);
+                    $.post( operationRoute + '/move_node', {
+                            'id': data.node.id,
+                            'parent': '#' === data.parent ? null : data.parent,
+                            'old_parent': '#' === data.old_parent ? null : data.old_parent,
+                            'position': data.position,
+                            'old_position': data.old_position,
                         })
                         .done(function (d) {
-                            if(isMobile) {
-                                $(window).animate({scrollTop: $(document).height() + $(window).height()});
-                            }
-                            var icon = '<i class="fa fa-xs fa-arrow-circle-right mr-2 ml-2 text-info"></i>';
-
-                            $('#data .info').html(d.nodeWithAncestors.join(icon)).show();
-                            var formId = '#frmMenu',
-                                $form = $(formId);
-                            $('#name', formId).val(d.name);
-                            $('#css_class', formId).val(d.css_class);
-                            $('#icon', formId).val(d.icon);
-                            $('#fa_icon', formId).val(d.fa_icon);
-                            $('input[name=id]', formId).val(d.id);
-                            $('#is_published', formId).prop('checked', (1 == d.is_published) ? true : false);
-                            $('#api_enabled', formId).prop('checked', (1 == d.api_enabled) ? true : false);
-                            $('#url', formId).val(d.url);
-                            $('#menuItemType', formId).val("");
-
-                            if( d.menuItemType ) {
-                                $('#menuItemType', formId).val(d.menuItemType.id);
-                                handleMenuItemType(d.menuItemType.id);
-                            }
-
-                            $('#btnRemove','#frmMenu').removeClass('d-none');
-
-                            $('#btnSubmit', formId).unbind('click').bind('click', function(e) {
-                                e.preventDefault();
-                                var url = $(e.currentTarget).closest("form").prop('action');
-                                $.post(url, $form.serialize())
-                                    .done(function(data){
-                                        $('#tree').jstree('refresh');
-//                                            $('#btnRemove','#frmMenu').removeClass('d-none');
-                                    })
-                                    .fail(function(xhr,err){
-                                        console.error(err);
-                                    });
-                                return false;
-                            });
+                            console.info('move done');
+                            console.info(d);
+                        })
+                        .fail(function () {
+                            data.instance.refresh();
                         });
-                }
-                else {
-                    $('#data .info').text('Menu-Punkt links auswählen.').show();
-                }
-            });
+                })
+                .on('rename_node.jstree', function (e, data) {
+                    $.post( operationRoute + '/rename_node', {
+                            'id': data.node.id,
+                            'text': data.node.text,
+                        })
+                        .fail(function () {
+                            data.instance.refresh();
+                        });
+                })
+                .on('refresh.jstree', function (e, data) {
+                    $tree.jstree('deselect_all', true);
+                })
+                .on('delete_node.jstree', function (e, data) {
+                    $.post( operationRoute + '/delete_node', {
+                            'id': data.node.id,
+                            'parent': '#' === data.parent ? null : data.parent,
+                        })
+                        .done(function(d) {
+                            $('#btnRemove','#frmMenu').removeClass('d-none').addClass('d-none');
+                        })
+                        .fail(function () {
+                            data.instance.refresh();
+                        });
+                })
+                .on('changed.jstree', function (e, data) {
+                    if(data && data.selected && data.selected.length) {
+                        var inst = $('#tree').jstree(true),
+                            parent = inst.get_node(data.node.parent),
+                            position = $.inArray(data.node.id, parent.children);
+
+                        $.post( operationRoute + '/get_content', {
+                                'id': data.selected.join(':'),
+                                'text': data.node.text,
+                                'position': position,
+                                'parent': parent.id,
+                            })
+                            .done(function (d) {
+                                console.info('changed done');
+                                console.info(d);
+                                if(isMobile) {
+                                    $(window).animate({scrollTop: $(document).height() + $(window).height()});
+                                }
+                                var icon = '<i class="fa fa-xs fa-arrow-circle-right mr-2 ml-2 text-info"></i>';
+
+                                $('#data .info').html(d.nodeWithAncestors.join(icon)).show();
+                                var formId = '#frmMenu',
+                                    $form = $(formId);
+                                $('#name', formId).val(d.name);
+                                $('#icon', formId).val(d.icon);
+                                $('#fa_icon', formId).val(d.fa_icon);
+                                $('input[name=id]', formId).val(d.id);
+                                $('#is_published', formId).prop('checked', (1 == d.is_published) ? true : false);
+                                $('#api_enabled', formId).prop('checked', (1 == d.api_enabled) ? true : false);
+                                $('#url', formId).val(d.url);
+                                $('#menuItemType', formId).val("");
+
+                                if( d.menuItemType ) {
+                                    $('#menuItemType', formId).val(d.menuItemType.id);
+                                    handleMenuItemType(d.menuItemType.id);
+                                }
+
+                                $('#btnRemove','#frmMenu').removeClass('d-none');
+
+                                $('#btnSubmit', formId).unbind('click').bind('click', function(e) {
+                                    console.log('submit clicked');
+                                    e.preventDefault();
+                                    var url = $(e.currentTarget).closest("form").prop('action');
+                                    $.post(url, $form.serialize())
+                                        .done(function(data){
+                                            console.log('form submitted');
+                                            console.debug(data);
+                                            $('#tree').jstree('refresh');
+//                                            $('#btnRemove','#frmMenu').removeClass('d-none');
+                                        })
+                                        .fail(function(xhr,err){
+                                            console.error(err);
+                                        });
+                                    return false;
+                                });
+                            });
+                    }
+                    else {
+                        $('#data .info').text('Menu-Punkt links auswählen.').show();
+                    }
+                });
 
         $('#create','#menuControl').click(function() {
             var selected = $tree.jstree('get_selected'),
@@ -219,7 +189,7 @@
                     html += "<tr><td>"+k+": </td><td>"+v+"<td></tr>";
                 });
                 html += '</table>';
-                myModale('show','Baum Analyse',html);
+                MyModale('show','Baum Analyse',html);
             });
         });
         $('#fixTree','#menuControl').click(function() {
@@ -228,7 +198,7 @@
                 if(0 === countFixes) {
                     text = "Alles in Ordnung, keine Reparatur notwendig.";
                 }
-                myModale('show','Baum Reparatur',text);
+                MyModale('show','Baum Reparatur',text);
             });
         });
         $('#refresh','#menuControl').click(function() {
@@ -257,13 +227,14 @@
                             html += this.tag;
                         });
                         html += '</div>';
-                        myModale('show','Icons',html);
+                        MyModale('show','Icons',html);
                         var elem = '#myModal',
                                 $modal = $(elem);
                         $modal.on('shown.bs.modal', function() {
                             var modal = this;
                             $('.icon-list .icn', this).click(function() {
                                 var name = $(this).attr('name');
+                                console.log(this.nodeName, name);
                                 $('#icon').val(name);
                                 $modal.modal('hide');
                             });
@@ -278,6 +249,7 @@
     });
 
     function handleMenuItemType(type) {
+        console.info('handleMenuItemType: ' + type);
         var $route = $('#route', '#frmMenu'),
                 $url = $('#url', '#frmMenu')
                 ;
@@ -286,12 +258,14 @@
                 // only label
                 $route.prop('disabled','disabled').parent().removeClass('d-none').addClass('d-none');
                 $url.prop('disabled','disabled').parent().removeClass('d-none').addClass('d-none');
+                console.info('is label');
                 break;
 
             case 2:
                 // external link
                 $route.prop('disabled','disabled').parent().removeClass('d-none').addClass('d-none');
                 $url.removeAttr('disabled').parent().removeClass('d-none');
+                console.info('is link');
                 break;
 
             case 3:
@@ -301,6 +275,7 @@
                 $route.change(function(){
                     $url.removeAttr('disabled').val($(this).val());
                 });
+                console.info('is route');
                 break;
         }
     }

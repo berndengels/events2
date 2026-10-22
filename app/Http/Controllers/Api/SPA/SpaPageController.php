@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\SPA;
 
-use App\Models\Page;
+use App\ModelsOld\Page;
 use App\Repositories\PageRepository;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SpaPageResource;

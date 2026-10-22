@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use App\Helper\MyDate;
 use Carbon\CarbonPeriod;
 use Carbon\CarbonInterval;
-use App\Models\PeriodicEvent;
+use App\ModelsOld\PeriodicEvent;
 
 /**
  * Class EventDateTime

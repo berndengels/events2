@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\SPA;
 
-use App\Models\Event;
+use App\ModelsOld\Event;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;

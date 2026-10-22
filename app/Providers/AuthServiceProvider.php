@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Shipping;
+use App\ModelsOld\Shipping;
 use App\Policies\ShippingPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;

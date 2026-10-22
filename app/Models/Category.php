@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+use Kyslik\ColumnSortable\Sortable;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\Category
@@ -16,50 +18,58 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property string $slug
  * @property string|null $icon
- * @property-read Collection|EventPeriodic[] $eventPeriodics
+ * @property string|null $default_time
+ * @property int|null $default_price
+ * @property int $is_published
+ * @property-read Collection<int, EventPeriodic> $eventPeriodics
  * @property-read int|null $event_periodics_count
- * @property-read Collection|EventTemplate[] $eventTemplates
+ * @property-read Collection<int, EventTemplate> $eventTemplates
  * @property-read int|null $event_templates_count
- * @property-read Collection|Event[] $events
+ * @property-read Collection<int, Event> $events
  * @property-read int|null $events_count
- * @property-read mixed $resource_url
  * @method static Builder|Category newModelQuery()
  * @method static Builder|Category newQuery()
  * @method static Builder|Category query()
+ * @method static Builder|Category sortable($defaultParameters = null)
+ * @method static Builder|Category whereDefaultPrice($value)
+ * @method static Builder|Category whereDefaultTime($value)
  * @method static Builder|Category whereIcon($value)
  * @method static Builder|Category whereId($value)
+ * @method static Builder|Category whereIsPublished($value)
  * @method static Builder|Category whereName($value)
  * @method static Builder|Category whereSlug($value)
  * @mixin Eloquent
- * @property-read array $translations
  */
 class Category extends Model
 {
-    protected $table = 'category';
+	use Sortable;
+
+	protected $table = 'category';
     protected $fillable = [
         'name',
+        'slug',
         'icon',
+        'default_time',
+        'default_price',
+        'is_published',
     ];
-
     public $timestamps = false;
-    protected $appends = ['resource_url'];
+	public $sortable = [
+		'name',
+	];
 
-    /* ************************ ACCESSOR ************************* */
-
-    public function getResourceUrlAttribute()
-    {
-        return url('/admin/categories/'.$this->getKey());
-    }
-
-    public static function boot() {
-        parent::boot();
-        self::creating(function($model) {
-            $model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
-        });
-        self::updating(function($model) {
-            $model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
-        });
-    }
+	public static function boot() {
+		parent::boot();
+		self::creating(function($model) {
+			$model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
+		});
+		self::saving(function($model) {
+			$model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
+		});
+		self::updating(function($model) {
+			$model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
+		});
+	}
 
     public function delete()
     {
@@ -89,13 +99,13 @@ class Category extends Model
         return $this->hasMany(Event::class);
     }
 
-    /**
-     * @return HasMany
-     */
-    public function eventTemplates()
-    {
-        return $this->hasMany(EventTemplate::class);
-    }
+	/**
+	 * @return HasMany
+	 */
+	public function eventTemplates()
+	{
+		return $this->hasMany(EventTemplate::class);
+	}
 
     /**
      * @return HasMany

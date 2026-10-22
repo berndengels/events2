@@ -2,7 +2,7 @@
 namespace App\Http\Resources\Payment\Stripe;
 
 use App\Helper\MyLang;
-use App\Models\Customer;
+use App\ModelsOld\Customer;
 use Gloudemans\Shoppingcart\CartItem;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Request;

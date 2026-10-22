@@ -1,7 +1,7 @@
 <?php
 namespace App\Providers;
 
-use App\Models\AdminUser;
+use App\ModelsOld\AdminUser;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;

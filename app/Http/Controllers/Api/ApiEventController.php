@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Event;
+use App\ModelsOld\Event;
 use App\Entities\EventEntity;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;

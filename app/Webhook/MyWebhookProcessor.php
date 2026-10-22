@@ -3,7 +3,7 @@
 namespace App\Webhook;
 
 use Exception;
-use App\Models\Webhook;
+use App\ModelsOld\Webhook;
 use Illuminate\Http\Request;
 use Spatie\WebhookClient\Exceptions\WebhookFailed;
 use Spatie\WebhookClient\Events\InvalidSignatureEvent;

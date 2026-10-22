@@ -3,9 +3,9 @@ namespace App\Jobs\PayPalWebhooks;
 
 use Exception;
 use Carbon\Carbon;
-use App\Models\Order;
-use App\Models\Webhook;
-use App\Models\Customer;
+use App\ModelsOld\Order;
+use App\ModelsOld\Webhook;
+use App\ModelsOld\Customer;
 use App\Events\PaymentSucceeded;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;

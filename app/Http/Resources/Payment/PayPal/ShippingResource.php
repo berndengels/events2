@@ -2,7 +2,7 @@
 namespace App\Http\Resources\Payment\PayPal;
 
 use App\Helper\MyLang;
-use App\Models\Shipping;
+use App\ModelsOld\Shipping;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

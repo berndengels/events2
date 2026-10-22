@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\Message;
+use App\ModelsOld\Message;
 use App\Libs\MySeedImporter as Importer;
 
 class MessageImportSeeder extends Importer

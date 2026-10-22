@@ -1,38 +1,45 @@
 <?php
+
 namespace App\Models;
 
-use App\Models\Ext\HasAdminUser;
+use App\Models\Image;
+use App\Models\Ext\HasUser;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Kyslik\ColumnSortable\Sortable;
+use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\EventTemplate
+ * Class Event
  *
  * @property int $id
  * @property int|null $theme_id
  * @property int $category_id
- * @property int $created_by
- * @property int|null $updated_by
  * @property string $title
  * @property string|null $subtitle
- * @property string|null $description
- * @property string|null $links
- * @property string|null $created_at
- * @property string|null $updated_at
- * @property-read Category $category
- * @property-read \Brackets\AdminAuth\Models\AdminUser $createdBy
- * @property-read mixed $resource_url
- * @property-read Collection|Image[] $images
+ * @property array $description
+ * @property array $links
+ * @property Carbon $created_at
+ * @property int $created_by
+ * @property Carbon|null $updated_at
+ * @property int|null $updated_by
+ * @property-read Category|null $category
+ * @property-read AdminUser|null $createdBy
+ * @property-read mixed $description_sanitized
+ * @property-read mixed $description_text
+ * @property-read mixed $description_without_video
+ * @property-read Collection<int, Images> $images
  * @property-read int|null $images_count
  * @property-read Theme|null $theme
- * @property-read \Brackets\AdminAuth\Models\AdminUser|null $updatedBy
+ * @property-read AdminUser|null $updatedBy
  * @method static Builder|EventTemplate newModelQuery()
  * @method static Builder|EventTemplate newQuery()
  * @method static Builder|EventTemplate query()
+ * @method static Builder|EventTemplate sortable($defaultParameters = null)
  * @method static Builder|EventTemplate whereCategoryId($value)
  * @method static Builder|EventTemplate whereCreatedAt($value)
  * @method static Builder|EventTemplate whereCreatedBy($value)
@@ -48,47 +55,29 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class EventTemplate extends Model
 {
-    use HasAdminUser;
+	use Sortable, HasUser;
 
+	/**
+     * @var string
+     */
     protected $table = 'event_template';
-    protected $fillable = [
-        'id',
-        'theme_id',
-        'category_id',
-        'title',
-        'subtitle',
-        'description',
-        'links',
-        'is_published',
-        'created_by',
-        'updated_by',
-        'created_at',
-        'updated_at',
-    ];
-    public $timestamps = false;
-    protected $appends = ['resource_url','images'];
-
-    /* ************************ ACCESSOR ************************* */
-
-    public function getResourceUrlAttribute()
-    {
-        return url('/admin/event-templates/'.$this->getKey());
-    }
-
-    public function setImagesAttribute() {
-        $this->images = collect([]);
-    }
-
-    public function getImagesAttribute() {
-        return collect([]);
-    }
-
     /**
+     * @var array
+     */
+	protected $guarded = ['id'];
+    protected $dates = ['created_at','updated_at'];
+    protected $appends = [
+        'descriptionSanitized',
+        'descriptionText',
+        'descriptionWithoutVideo',
+    ];
+
+	/**
      * @return BelongsTo
      */
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo('App\Models\Category');
     }
 
     /**
@@ -96,6 +85,65 @@ class EventTemplate extends Model
      */
     public function theme()
     {
-        return $this->belongsTo(Theme::class);
+        return $this->belongsTo('App\Models\Theme');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function images()
+    {
+        return $this->hasMany('App\Models\Images');
+    }
+
+    /**
+     * @param string $value
+     * @return array
+     */
+    public function getLinksAttribute($value = '')
+    {
+        if('' !== $value) {
+            return collect(preg_split("/[\n\r]+/", $value));
+        }
+    }
+
+    public function getDescriptionTextAttribute()
+    {
+        if($this->description) {
+            return strip_tags(preg_replace('/<br[ ]?[\/]?>/i',"\n", $this->description));
+        }
+    }
+
+    /**
+	 * @param string $value
+	 * @return array
+	 */
+	public function getDescriptionAttribute($value = '')
+	{
+		if('' !== $value) {
+			return preg_replace(['/^<p>(<br[ ]?[\/]?>){1,}/i','/(<br[ ]?[\/]?>){1,}<\/p>$/i'],['<p>','</p>'], trim($value));
+		}
+	}
+
+    public function getDescriptionSanitizedAttribute()
+    {
+        if($this->description) {
+			$wrapper = '<div class="ratio ratio-16x9 m-0 p-0">%%</div>';
+            return preg_replace(
+                "/(<iframe[^>]+><\/iframe>)/i",
+                str_replace('%%','$1', $wrapper),
+                $this->description
+            );
+        }
+        return null;
+    }
+
+    public function getDescriptionWithoutVideoAttribute()
+    {
+        return preg_replace(
+            "/<iframe[^>]+>(.*)<\/iframe>/i",
+            '',
+            $this->description
+        );
     }
 }

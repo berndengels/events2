@@ -22,7 +22,7 @@ $factory->define(Brackets\AdminAuth\Models\AdminUser::class, function (Faker\Gen
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Category::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Category::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'slug' => $faker->unique()->slug,
@@ -32,7 +32,7 @@ $factory->define(App\Models\Category::class, static function (Faker\Generator $f
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Theme::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Theme::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'slug' => $faker->unique()->slug,
@@ -42,7 +42,7 @@ $factory->define(App\Models\Theme::class, static function (Faker\Generator $fake
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Page::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Page::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'slug' => $faker->unique()->slug,
@@ -52,7 +52,7 @@ $factory->define(App\Models\Page::class, static function (Faker\Generator $faker
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Event::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Event::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'slug' => $faker->unique()->slug,
@@ -62,7 +62,7 @@ $factory->define(App\Models\Event::class, static function (Faker\Generator $fake
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\EventPeriodic::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\EventPeriodic::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'slug' => $faker->unique()->slug,
@@ -72,7 +72,7 @@ $factory->define(App\Models\EventPeriodic::class, static function (Faker\Generat
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\EventTemplate::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\EventTemplate::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'slug' => $faker->unique()->slug,
@@ -82,7 +82,7 @@ $factory->define(App\Models\EventTemplate::class, static function (Faker\Generat
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\EventTemplate::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\EventTemplate::class, static function (Faker\Generator $faker) {
     return [
         'theme_id' => $faker->randomNumber(5),
         'category_id' => $faker->randomNumber(5),
@@ -99,7 +99,7 @@ $factory->define(App\Models\EventTemplate::class, static function (Faker\Generat
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\EventPeriodic::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\EventPeriodic::class, static function (Faker\Generator $faker) {
     return [
         'theme_id' => $faker->randomNumber(5),
         'category_id' => $faker->randomNumber(5),
@@ -122,7 +122,7 @@ $factory->define(App\Models\EventPeriodic::class, static function (Faker\Generat
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Page::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Page::class, static function (Faker\Generator $faker) {
     return [
         'created_by' => $faker->randomNumber(5),
         'updated_by' => $faker->randomNumber(5),
@@ -137,7 +137,7 @@ $factory->define(App\Models\Page::class, static function (Faker\Generator $faker
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Event::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Event::class, static function (Faker\Generator $faker) {
     return [
         'theme_id' => $faker->randomNumber(5),
         'category_id' => $faker->randomNumber(5),
@@ -159,7 +159,7 @@ $factory->define(App\Models\Event::class, static function (Faker\Generator $fake
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Role::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Role::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'guard_name' => $faker->sentence,
@@ -170,7 +170,7 @@ $factory->define(App\Models\Role::class, static function (Faker\Generator $faker
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Permission::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Permission::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'guard_name' => $faker->sentence,
@@ -181,7 +181,7 @@ $factory->define(App\Models\Permission::class, static function (Faker\Generator 
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Customer::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Customer::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'email' => $faker->email,
@@ -199,14 +199,14 @@ $factory->define(App\Models\Customer::class, static function (Faker\Generator $f
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\AddressCategory::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\AddressCategory::class, static function (Faker\Generator $faker) {
     return [
 
 
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Address::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Address::class, static function (Faker\Generator $faker) {
     return [
         'address_category_id' => $faker->randomNumber(5),
         'email' => $faker->email,
@@ -219,7 +219,7 @@ $factory->define(App\Models\Address::class, static function (Faker\Generator $fa
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\MusicStyle::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\MusicStyle::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'slug' => $faker->unique()->slug,
@@ -228,7 +228,7 @@ $factory->define(App\Models\MusicStyle::class, static function (Faker\Generator 
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Message::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Message::class, static function (Faker\Generator $faker) {
     return [
         'music_style_id' => $faker->randomNumber(5),
         'email' => $faker->email,
@@ -240,7 +240,7 @@ $factory->define(App\Models\Message::class, static function (Faker\Generator $fa
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\News::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\News::class, static function (Faker\Generator $faker) {
     return [
         'end_date' => $faker->date(),
         'title' => $faker->sentence,
@@ -256,7 +256,7 @@ $factory->define(App\Models\News::class, static function (Faker\Generator $faker
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Menu::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Menu::class, static function (Faker\Generator $faker) {
     return [
         'parent_id' => $faker->randomNumber(5),
         'menu_item_type_id' => $faker->randomNumber(5),
@@ -274,7 +274,7 @@ $factory->define(App\Models\Menu::class, static function (Faker\Generator $faker
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\NewsletterStatus::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\NewsletterStatus::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
 
@@ -282,7 +282,7 @@ $factory->define(App\Models\NewsletterStatus::class, static function (Faker\Gene
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Newsletter::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Newsletter::class, static function (Faker\Generator $faker) {
     return [
         'tag_id' => $faker->randomNumber(5),
         'created_by' => $faker->randomNumber(5),
@@ -294,21 +294,21 @@ $factory->define(App\Models\Newsletter::class, static function (Faker\Generator 
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Product::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Product::class, static function (Faker\Generator $faker) {
     return [
 
 
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Order::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Order::class, static function (Faker\Generator $faker) {
     return [
 
 
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Product::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Product::class, static function (Faker\Generator $faker) {
     return [
         'name' => $faker->firstName,
         'description' => $faker->text(),
@@ -324,7 +324,7 @@ $factory->define(App\Models\Product::class, static function (Faker\Generator $fa
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Order::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Order::class, static function (Faker\Generator $faker) {
     return [
         'shoppingcart_id' => $faker->sentence,
         'instance' => $faker->sentence,
@@ -340,7 +340,7 @@ $factory->define(App\Models\Order::class, static function (Faker\Generator $fake
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\AddressCategory::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\AddressCategory::class, static function (Faker\Generator $faker) {
     return [
         'tag_id' => $faker->randomNumber(5),
         'name' => $faker->firstName,
@@ -349,7 +349,7 @@ $factory->define(App\Models\AddressCategory::class, static function (Faker\Gener
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Shipping::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Shipping::class, static function (Faker\Generator $faker) {
     return [
         'user_id' => $faker->randomNumber(5),
         'postcode' => $faker->sentence,
@@ -363,7 +363,7 @@ $factory->define(App\Models\Shipping::class, static function (Faker\Generator $f
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\Country::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\Country::class, static function (Faker\Generator $faker) {
     return [
         'code' => $faker->sentence,
         'en' => $faker->sentence,
@@ -377,7 +377,7 @@ $factory->define(App\Models\Country::class, static function (Faker\Generator $fa
     ];
 });
 /** @var  Factory $factory */
-$factory->define(App\Models\ProductStock::class, static function (Faker\Generator $faker) {
+$factory->define(App\ModelsOld\ProductStock::class, static function (Faker\Generator $faker) {
     return [
         'product_id' => $faker->randomNumber(5),
         'product_size_id' => $faker->randomNumber(5),

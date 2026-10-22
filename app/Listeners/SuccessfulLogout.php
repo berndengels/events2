@@ -1,7 +1,7 @@
 <?php
 namespace App\Listeners;
 
-use App\Models\Shoppingcart;
+use App\ModelsOld\Shoppingcart;
 use Illuminate\Auth\Events\Logout;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Session;

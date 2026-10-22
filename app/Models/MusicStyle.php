@@ -1,13 +1,15 @@
 <?php
-
 namespace App\Models;
 
+use App\Models\Message;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
+use Kyslik\ColumnSortable\Sortable;
 
 /**
  * App\Models\MusicStyle
@@ -15,14 +17,14 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property string $name
  * @property string $slug
- * @property-read Collection|AdminUser[] $adminUsers
- * @property-read int|null $admin_users_count
- * @property-read mixed $resource_url
- * @property-read Collection|Message[] $messages
+ * @property-read Collection<int, Message> $messages
  * @property-read int|null $messages_count
+ * @property-read Collection<int, AdminUser> $users
+ * @property-read int|null $users_count
  * @method static Builder|MusicStyle newModelQuery()
  * @method static Builder|MusicStyle newQuery()
  * @method static Builder|MusicStyle query()
+ * @method static Builder|MusicStyle sortable($defaultParameters = null)
  * @method static Builder|MusicStyle whereId($value)
  * @method static Builder|MusicStyle whereName($value)
  * @method static Builder|MusicStyle whereSlug($value)
@@ -30,34 +32,42 @@ use Illuminate\Support\Str;
  */
 class MusicStyle extends Model
 {
-    protected $table = 'music_style';
-    protected $fillable = ['name', 'slug',];
+	use Sortable;
+
+	protected $table = 'music_style';
+    protected $fillable = ['name'];
     public $timestamps = false;
-    protected $appends = ['resource_url'];
+	public $sortable = [
+		'name',
+	];
 
-    public static function boot() {
-        parent::boot();
-        self::creating(function($model) {
-            $model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
-        });
-        self::updating(function($model) {
-            $model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
-        });
-    }
-
-    /* ************************ ACCESSOR ************************* */
-
-    public function getResourceUrlAttribute()
+	public static function boot() {
+		parent::boot();
+		self::creating(function($model) {
+			$model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
+		});
+		self::saving(function($model) {
+			$model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
+		});
+		self::updating(function($model) {
+			$model->slug = Str::slug(str_replace('.','_',$model->name), '-', 'de');
+		});
+	}
+/*
+	public function users()
+	{
+		return $this->belongsToMany(User::class, 'user_music_styles','user_id');
+	}
+*/
+    public function users(): BelongsToMany
     {
-        return url('/admin/music-styles/'.$this->getKey());
+        return $this->belongsToMany(
+            AdminUser::class,
+            'user_music_styles'
+        );
     }
 
-    public function adminUsers()
-    {
-        return $this->belongsToMany(AdminUser::class,'admin_users_music_style');
-    }
-
-    /**
+	/**
      * @return HasMany
      */
     public function messages()
@@ -67,10 +77,10 @@ class MusicStyle extends Model
 
     public function delete()
     {
-        $count = $this->adminUsers->count();
+        $count = $this->users->count();
         if($count > 0) {
             return back()
-                ->with('error','Es existieren noch Customer ('.$count.') mit dieser Kategorie! Bitte vorher löschen.');
+                ->with('error','Es existieren noch User ('.$count.') mit dieser Kategorie! Bitte vorher löschen.');
         }
         $count = $this->messages->count();
         if($count > 0) {

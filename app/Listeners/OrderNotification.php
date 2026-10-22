@@ -2,10 +2,10 @@
 namespace App\Listeners;
 
 use Exception;
-use App\Models\Customer;
-use App\Models\Download;
+use App\ModelsOld\Customer;
+use App\ModelsOld\Download;
 use App\Mail\OrderShipped;
-use App\Models\CustomerMail;
+use App\ModelsOld\CustomerMail;
 use App\Events\ProductOrdered;
 use Illuminate\Support\Facades\Mail;
 

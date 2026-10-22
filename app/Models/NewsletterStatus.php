@@ -1,4 +1,11 @@
 <?php
+/**
+ * NewsletterStatus.php
+ *
+ * @author    Bernd Engels
+ * @created   15.06.19 13:01
+ * @copyright Webwerk Berlin GmbH
+ */
 
 namespace App\Models;
 
@@ -11,7 +18,6 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property int $id
  * @property string $name
- * @property-read mixed $resource_url
  * @method static Builder|NewsletterStatus newModelQuery()
  * @method static Builder|NewsletterStatus newQuery()
  * @method static Builder|NewsletterStatus query()
@@ -21,25 +27,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class NewsletterStatus extends Model
 {
-    protected $table = 'newsletter_status';
+	/**
+	 * @var string
+	 */
+	protected $table = 'newsletter_status';
+	/**
+	 * @var array
+	 */
+	protected $fillable = ['name'];
 
-    protected $fillable = [
-        'name',
-
-    ];
-
-
-    protected $dates = [
-
-    ];
-    public $timestamps = false;
-
-    protected $appends = ['resource_url'];
-
-    /* ************************ ACCESSOR ************************* */
-
-    public function getResourceUrlAttribute()
-    {
-        return url('/admin/newsletter-statuses/'.$this->getKey());
-    }
 }

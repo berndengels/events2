@@ -1,9 +1,9 @@
 #!/bin/sh
-
-php artisan cache:clear
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
+PHP = "/usr/local/Cellar/php@8.2/8.2.28_1/bin/php"
+$PHP ./artisan cache:clear
+$PHP ./artisan config:clear
+$PHP ./artisan route:clear
+$PHP ./artisan view:clear
 #composer clearcache
 #composer dumpautoload
 printf 'all DONE \360\237\230\216\n'

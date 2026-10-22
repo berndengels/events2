@@ -1,7 +1,7 @@
 <?php
 namespace App\Jobs\StripeWebhooks;
 
-use App\Models\Webhook;
+use App\ModelsOld\Webhook;
 use Illuminate\Bus\Queueable;
 use App\Events\ProductOrdered;
 use App\Events\PaymentSucceeded;

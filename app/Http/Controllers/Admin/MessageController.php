@@ -1,210 +1,90 @@
 <?php
-
+/**
+ * UserController.php
+ *
+ * @author    Bernd Engels
+ * @created   28.02.19 17:17
+ * @copyright Webwerk Berlin GmbH
+ */
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\MessageExport;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Message\BulkDestroyMessage;
-use App\Http\Requests\Admin\Message\DestroyMessage;
-use App\Http\Requests\Admin\Message\IndexMessage;
-use App\Http\Requests\Admin\Message\StoreMessage;
-use App\Http\Requests\Admin\Message\UpdateMessage;
-use App\Models\Message;
-use App\Models\MusicStyle;
-use Brackets\AdminListing\Facades\AdminListing;
+use App\Forms\BandsForm;
+use App\Forms\Filter\MessageFilterForm;
+use App\ModelsOld\Message;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Kris\LaravelFormBuilder\FormBuilder;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
 
-class MessageController extends Controller
+class MessageController extends MainController
 {
+    use FormBuilderTrait;
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @param IndexMessage $request
-     * @return array|Factory|View
-     */
-    public function index(IndexMessage $request)
+    static protected $model	= Message::class;
+    static protected $form	= BandsForm::class;
+
+	protected function getList( FormBuilder $formBuilder, Request $request )
+	{
+		$musicStyle = $request->get('musicStyle');
+		$model = static::$model;
+		$data = $model::with('musicStyle')->sortable(['created_at' => 'desc'])
+			->when($musicStyle, function($query) use($musicStyle) {
+				return $query->where('music_style_id', $musicStyle);
+			})
+			->paginate( $this->paginationLimit )
+		;
+		$filter = $formBuilder->create(MessageFilterForm::class, [], [
+			'musicStyle'=> $musicStyle,
+		]);
+		$data = [
+			'data'      => $data,
+			'filter'	=> $filter,
+			'addLink'   => $this->addLink,
+			'entity'    => $this->entity,
+			'title'     => Str::plural($this->title),
+		];
+		$view = view('admin.messages', $data);
+		return $view;
+	}
+
+	public function show( $id ) {
+		$message = Message::find($id);
+
+		return view('admin.messageShow', [
+			'data'      => $message,
+			'listLink'  => $this->listLink,
+			'entity'    => $this->entity,
+			'title'     => Str::plural($this->title),
+		]);
+	}
+
+	public function store( Request $request )
     {
-        // create and AdminListing instance for a specific model and
-        $data = AdminListing::create(Message::class)->processRequestAndGet(
-            // pass the request with params
-            $request,
-            // set columns to query
-            ['id', 'music_style_id', 'email', 'name'],
-            // set columns to searchIn
-            ['id', 'email', 'name', 'message'],
-            function (Builder $query) use ($request) {
-                $query->with('musicStyle');
-                if($request->has('musicStyle')){
-                    $query->where('music_style_id', $request->get('musicStyle'));
-                }
-                $query->orderBy('created_at', 'desc');
-            }
-        );
+        $form   = $this->form(BandsForm::class);
+        $entity = new Message();
 
-        if ($request->ajax()) {
-            if ($request->has('bulk')) {
-                return [
-                    'bulkItems' => $data->pluck('id')
-                ];
-            }
-            return ['data' => $data];
+        if (!$form->isValid()) {
+            return redirect()->back()->withErrors($form->getErrors())->withInput();
+        }
+        $values = $request->post();
+        $entity->name   = $values['name'];
+        $entity->email  = $values['email'];
+        $entity->msg    = $values['msg'];
+
+        try {
+            $entity->saveOrFail();
+            $id = $entity->id;
+        } catch (Exception $e) {
+            return back()->with('error','Fehler: '.$e->getMessage());
         }
 
-        return view('admin.message.index', [
-            'data' => $data,
-            'musicStyles'   => MusicStyle::all(),
-        ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function create()
-    {
-        $this->authorize('admin.message.create');
-
-        return view('admin.message.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreMessage $request
-     * @return array|RedirectResponse|Redirector
-     */
-    public function store(StoreMessage $request)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Store the Message
-        $message = Message::create($sanitized);
-
-        if ($request->ajax()) {
-            return ['redirect' => url('admin/messages'), 'message' => trans('brackets/admin-ui::admin.operation.succeeded')];
+        switch($request->submit) {
+            case 'save':
+                return redirect()->route('admin.messageEdit', ['id' => $id]);
+            case 'saveAndBack':
+            default:
+                return redirect()->route('admin.messageList');
         }
-
-        return redirect('admin/messages');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Message $message
-     * @throws AuthorizationException
-     * @return void
-     */
-    public function show(Message $message)
-    {
-        $this->authorize('admin.message.show', $message);
-        $message->load('musicStyle');
-        return view('admin.message.show', ['message' => $message]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Message $message
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function edit(Message $message)
-    {
-        $this->authorize('admin.message.edit', $message);
-
-        return view('admin.message.edit', [
-            'message' => $message,
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdateMessage $request
-     * @param Message $message
-     * @return array|RedirectResponse|Redirector
-     */
-    public function update(UpdateMessage $request, Message $message)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Update changed values Message
-        $message->update($sanitized);
-
-        if ($request->ajax()) {
-            return [
-                'redirect' => url('admin/messages'),
-                'message' => trans('brackets/admin-ui::admin.operation.succeeded'),
-            ];
-        }
-
-        return redirect('admin/messages');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param DestroyMessage $request
-     * @param Message $message
-     * @throws Exception
-     * @return ResponseFactory|RedirectResponse|Response
-     */
-    public function destroy(DestroyMessage $request, Message $message)
-    {
-        $message->delete();
-
-        if ($request->ajax()) {
-            return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Remove the specified resources from storage.
-     *
-     * @param BulkDestroyMessage $request
-     * @throws Exception
-     * @return Response|bool
-     */
-    public function bulkDestroy(BulkDestroyMessage $request) : Response
-    {
-        DB::transaction(static function () use ($request) {
-            collect($request->data['ids'])
-                ->chunk(1000)
-                ->each(static function ($bulkChunk) {
-                    Message::whereIn('id', $bulkChunk)->delete();
-
-                    // TODO your code goes here
-                });
-        });
-
-        return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-    }
-
-    /**
-     * Export entities
-     *
-     * @return BinaryFileResponse|null
-     */
-    public function export(): ?BinaryFileResponse
-    {
-        return Excel::download(app(MessageExport::class), 'messages.xlsx');
     }
 }

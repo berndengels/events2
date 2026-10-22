@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\MenuItemType;
+use App\ModelsOld\MenuItemType;
 use App\Libs\MySeedImporter as Importer;
 
 class MenuItemTypeSeeder extends Importer

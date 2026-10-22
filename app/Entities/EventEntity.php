@@ -56,6 +56,10 @@ class EventEntity extends Entity {
 	 */
 	private $images = [];
 	/**
+	 * @var null|Collection
+	 */
+	private $media = [];
+	/**
 	 * @var Carbon
 	 */
 	private $created_at;
@@ -356,6 +360,16 @@ class EventEntity extends Entity {
 		return $this;
 	}
 
+	public function getMedia(): array|Collection|null
+	{
+		return $this->media;
+	}
+
+	public function setMedia(array|Collection|null $media): self
+	{
+		$this->media = $media;
+		return $this;
+	}
 	public function __toString() {
 		return (string) $this->title;
 	}

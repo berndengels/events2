@@ -1,7 +1,7 @@
 <?php
 namespace App\Helper\Traits;
 
-use App\Models\Shipping;
+use App\ModelsOld\Shipping;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade as PDF;
 

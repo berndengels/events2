@@ -4,8 +4,8 @@ namespace App\Http\Resources;
 
 use App\Entities\AudioEntity;
 use App\Entities\ImageEntity;
-use App\Models\Audios;
-use App\Models\Images;
+use App\ModelsOld\Audios;
+use App\ModelsOld\Images;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

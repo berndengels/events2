@@ -2,7 +2,7 @@
 namespace Database\Seeders;
 
 use App\Libs\MySeedImporter as Importer;
-use App\Models\AdminUsersMusicStyle;
+use App\ModelsOld\AdminUsersMusicStyle;
 
 class AdminUserMusicStyleImportSeeder extends Importer
 {

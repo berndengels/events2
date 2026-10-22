@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\EventTemplate;
+use App\ModelsOld\EventTemplate;
 use App\Libs\MySeedImporter as Importer;
 
 class EventTemplateImportSeeder extends Importer

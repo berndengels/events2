@@ -185,8 +185,6 @@ return [
         Jenssegers\Agent\AgentServiceProvider::class,
         Anhskohbo\NoCaptcha\NoCaptchaServiceProvider::class,
 //		Biscolab\ReCaptcha\ReCaptchaServiceProvider::class,
-		MisterPhilip\MaintenanceMode\MaintenanceModeServiceProvider::class,
-        MisterPhilip\MaintenanceMode\MaintenanceCommandServiceProvider::class,
         Srmklive\PayPal\Providers\PayPalServiceProvider::class,
     ],
 

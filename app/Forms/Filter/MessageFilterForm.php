@@ -9,7 +9,7 @@
 
 namespace App\Forms\Filter;
 
-use App\Models\MusicStyle;
+use App\ModelsOld\MusicStyle;
 use Kris\LaravelFormBuilder\Form;
 use Kris\LaravelFormBuilder\Field;
 

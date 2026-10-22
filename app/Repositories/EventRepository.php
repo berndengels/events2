@@ -28,8 +28,7 @@ class EventRepository {
 			return $query
 				->where('title','LIKE', "%${search}%")
 				->orWhere('subtitle','LIKE', "%${search}%")
-				->orWhere('description','LIKE', "%${search}%")
-				;
+				->orWhere('description','LIKE', "%${search}%");
 		});
 		return $result;
 	}

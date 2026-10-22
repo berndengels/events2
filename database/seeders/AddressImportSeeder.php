@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\Address;
+use App\ModelsOld\Address;
 use App\Libs\MySeedImporter as Importer;
 
 class AddressImportSeeder extends Importer

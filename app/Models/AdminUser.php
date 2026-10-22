@@ -1,88 +1,198 @@
 <?php
+
 namespace App\Models;
 
+use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Support\Carbon;
-use Brackets\AdminAuth\Models\AdminUser as BaseModel;
-use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
-use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Kyslik\ColumnSortable\Sortable;
+use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
 
 /**
- * App\Models\AdminUser
+ * App\Models\User
  *
  * @property int $id
- * @property string|null $first_name
- * @property string|null $last_name
+ * @property int|null $is_super_admin
+ * @property string $username
  * @property string $email
+ * @property int|null $enabled
  * @property string $password
+ * @property \Illuminate\Support\Carbon|null $last_login
  * @property string|null $remember_token
- * @property int $activated
- * @property int $forbidden
- * @property string $language
- * @property Carbon|null $deleted_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Carbon|null $last_login_at
- * @property-read string|null $avatar_thumb_url
- * @property-read string $full_name
- * @property-read UrlGenerator|string $resource_url
- * @property-read MediaCollection|Media[] $media
- * @property-read int|null $media_count
- * @property-read Collection|MusicStyle[] $musicStyles
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read Collection<int, EventTemplate> $eventTemplatesCreated
+ * @property-read int|null $event_templates_created_count
+ * @property-read Collection<int, EventTemplate> $eventTemplatesUpdated
+ * @property-read int|null $event_templates_updated_count
+ * @property-read Collection<int, Event> $eventsCreated
+ * @property-read int|null $events_created_count
+ * @property-read Collection<int, EventPeriodic> $eventsPeriodicCreated
+ * @property-read int|null $events_periodic_created_count
+ * @property-read Collection<int, EventPeriodic> $eventsPeriodicUpdated
+ * @property-read int|null $events_periodic_updated_count
+ * @property-read Collection<int, Event> $eventsUpdated
+ * @property-read int|null $events_updated_count
+ * @property-read Collection<int, MusicStyle> $musicStyles
  * @property-read int|null $music_styles_count
- * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
+ * @property-read Collection<int, Newsletter> $newsletterCreated
+ * @property-read int|null $newsletter_created_count
+ * @property-read Collection<int, Newsletter> $newsletterUpdated
+ * @property-read int|null $newsletter_updated_count
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read Collection|Permission[] $permissions
- * @property-read int|null $permissions_count
- * @property-read Collection|Role[] $roles
- * @property-read int|null $roles_count
+ * @property-read Collection<int, Page> $pagesCreated
+ * @property-read int|null $pages_created_count
+ * @property-read Collection<int, Page> $pagesUpdated
+ * @property-read int|null $pages_updated_count
+ * @property-read Collection<int, PersonalAccessToken> $tokens
+ * @property-read int|null $tokens_count
  * @method static Builder|AdminUser newModelQuery()
  * @method static Builder|AdminUser newQuery()
- * @method static Builder|AdminUser permission($permissions)
  * @method static Builder|AdminUser query()
- * @method static Builder|AdminUser role($roles, $guard = null)
- * @method static Builder|AdminUser whereActivated($value)
+ * @method static Builder|AdminUser sortable($defaultParameters = null)
  * @method static Builder|AdminUser whereCreatedAt($value)
- * @method static Builder|AdminUser whereDeletedAt($value)
  * @method static Builder|AdminUser whereEmail($value)
- * @method static Builder|AdminUser whereFirstName($value)
- * @method static Builder|AdminUser whereForbidden($value)
+ * @method static Builder|AdminUser whereEnabled($value)
  * @method static Builder|AdminUser whereId($value)
- * @method static Builder|AdminUser whereLanguage($value)
- * @method static Builder|AdminUser whereLastLoginAt($value)
- * @method static Builder|AdminUser whereLastName($value)
+ * @method static Builder|AdminUser whereIsSuperAdmin($value)
+ * @method static Builder|AdminUser whereLastLogin($value)
  * @method static Builder|AdminUser wherePassword($value)
  * @method static Builder|AdminUser whereRememberToken($value)
  * @method static Builder|AdminUser whereUpdatedAt($value)
+ * @method static Builder|AdminUser whereUsername($value)
  * @mixin Eloquent
  */
-class AdminUser extends BaseModel
+class AdminUser extends Authenticatable
 {
-    public function musicStyles()
-    {
-        return $this->belongsToMany(MusicStyle::class, 'admin_users_music_style', 'admin_user_id', 'music_style_id');
-    }
-
-    public function __toString()
-    {
-        return $this->full_name;
-    }
-
-    /************* Media ********************/
+//    use Notifiable, HasRoles;
+    use Notifiable, Sortable, HasApiTokens;
+    protected $table = 'admin_users';
+	public $sortable = [
+		'username',
+		'email',
+		'last_login',
+		'enabled',
+	];
 
     /**
-     * Register media collections
+     * @var string
      */
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('avatar')
-            ->accepts('image/*')
-            ->maxNumberOfFiles(1) // Set the file count limit
-        ;
-    }
+	protected $primaryKey = 'id';
+	public $incrementing = true;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'username', 'email', 'password',
+    ];
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    protected $dates = ['last_login','created_at','updated_at'];
+
+	public function musicStyles()
+	{
+		return $this->belongsToMany(
+            MusicStyle::class,
+            'user_music_styles'
+        );
+	}
+
+	public function setLastLogin()
+	{
+		$now = Carbon::now('Europe/berlin');
+		$this->last_login = $now->format('Y-m-d H:i:s');
+		return $this;
+	}
+
+	/**
+	 * @return HasMany
+	 */
+	public function eventsCreated()
+	{
+		return $this->hasMany(Event::class, 'created_by', 'id');
+	}
+
+	public function eventsUpdated()
+	{
+		return $this->hasMany(Event::class, 'updated_by', 'id');
+	}
+
+	/**
+	 * @return HasMany
+	 */
+	public function eventTemplatesCreated()
+	{
+		return $this->hasMany(EventTemplate::class, 'created_by', 'id');
+	}
+
+	public function eventTemplatesUpdated()
+	{
+		return $this->hasMany(EventTemplate::class, 'updated_by', 'id');
+	}
+
+	/**
+	 * @return HasMany
+	 */
+	public function eventsPeriodicCreated()
+	{
+		return $this->hasMany(EventPeriodic::class, 'created_by', 'id');
+	}
+
+	/**
+	 * @return HasMany
+	 */
+	public function eventsPeriodicUpdated()
+	{
+		return $this->hasMany(EventPeriodic::class, 'updated_by', 'id');
+	}
+
+	/**
+	 * @return HasMany
+	 */
+	public function pagesCreated()
+	{
+		return $this->hasMany(Page::class, 'created_by', 'id');
+	}
+
+	/**
+	 * @return HasMany
+	 */
+	public function pagesUpdated()
+	{
+		return $this->hasMany(Page::class, 'updated_by', 'id');
+	}
+
+	/**
+	 * @return HasMany
+	 */
+	public function newsletterCreated()
+	{
+		return $this->hasMany(Newsletter::class, 'created_by', 'id');
+	}
+
+	/**
+	 * @return HasMany
+	 */
+	public function newsletterUpdated()
+	{
+		return $this->hasMany(Newsletter::class, 'updated_by', 'id');
+	}
 }

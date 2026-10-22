@@ -3,7 +3,7 @@ namespace App\Listeners;
 
 use App\Mail\OrderPayed;
 use App\Events\PaymentSucceeded;
-use App\Models\AdminUser;
+use App\ModelsOld\AdminUser;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 

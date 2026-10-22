@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\Category;
+use App\ModelsOld\Category;
 use App\Libs\MySeedImporter as Importer;
 
 class CategoryImportSeeder extends Importer

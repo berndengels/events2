@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Order;
+use App\ModelsOld\Order;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;

@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\Theme;
+use App\ModelsOld\Theme;
 use App\Libs\MySeedImporter as Importer;
 
 class ThemeImportSeeder extends Importer

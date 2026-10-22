@@ -1,188 +1,287 @@
 <?php
+/**
+ * NewsletterController.php
+ *
+ * @author    Bernd Engels
+ * @created   15.06.19 12:15
+ * @copyright Webwerk Berlin GmbH
+ */
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Newsletter\BulkDestroyNewsletter;
-use App\Http\Requests\Admin\Newsletter\DestroyNewsletter;
-use App\Http\Requests\Admin\Newsletter\IndexNewsletter;
-use App\Http\Requests\Admin\Newsletter\StoreNewsletter;
-use App\Http\Requests\Admin\Newsletter\UpdateNewsletter;
-use App\Models\Newsletter;
-use Brackets\AdminListing\Facades\AdminListing;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\DB;
-use Illuminate\View\View;
+use Carbon\Carbon;
+use App\Entities\Newsletter\CampaignEntity;
+use App\Entities\Newsletter\SettingsEntity;
+use App\Forms\NewsletterForm;
+use App\ModelsOld\AddressCategory;
+use App\ModelsOld\Event;
+use App\ModelsOld\Newsletter;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\Request;
+use Newsletter as SpatieNewsletter;
+use Kris\LaravelFormBuilder\FormBuilder;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
+use App\Repositories\NewsletterRepository;
+use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class NewsletterController extends Controller
 {
+	use AuthorizesRequests, DispatchesJobs, ValidatesRequests, FormBuilderTrait;
+	/**
+	 * @var User|Authenticatable|null
+	 */
+	protected $user = null;
+	protected $isAdmin = false;
+	private $campaignId;
+	public $isTest = true;
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @param IndexNewsletter $request
-     * @return array|Factory|View
-     */
-    public function index(IndexNewsletter $request)
-    {
-        // create and AdminListing instance for a specific model and
-        $data = AdminListing::create(Newsletter::class)->processRequestAndGet(
-            // pass the request with params
-            $request,
+	/**
+	 * @var NewsletterRepository
+	 */
+	protected $repository;
 
-            // set columns to query
-            ['id', 'tag_id', 'created_by', 'updated_by'],
+	public function __construct() {
+/*
+		$this->repository = new NewsletterRepository();
+		$this->middleware('auth');
+		$this->middleware(function ($request, $next) {
+			$this->user = auth()->user();
+			if($this->user) {
+				$this->isAdmin = (bool) $this->user->is_super_admin;
+				if($this->isTest) {
+					$emails	= [
+						$this->user->email,
+					];
 
-            // set columns to searchIn
-            ['id']
-        );
+					foreach($emails as $email) {
+						if ( !SpatieNewsletter::isSubscribed($email) ) {
+							SpatieNewsletter::subscribe($email);
+						}
+					}
+				}
+			}
+			return $next($request);
+		});
+*/
+	}
 
-        if ($request->ajax()) {
-            if ($request->has('bulk')) {
-                return [
-                    'bulkItems' => $data->pluck('id')
-                ];
-            }
-            return ['data' => $data];
-        }
+	public function index()
+	{
+/*
+		$campaigns = $this->repository->getCampaigns();
+		$newsletters = collect([]);
 
-        return view('admin.newsletter.index', ['data' => $data]);
-    }
+		if($campaigns->count()) {
+			foreach($campaigns as $campaign) {
+				$newsletters->add(new CampaignEntity($campaign));
+			}
+		}
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function create()
-    {
-        $this->authorize('admin.newsletter.create');
+		return view('admin.newsletter', [
+			'title'	=> 'Newsletter',
+			'data'	=> $newsletters,
+		]);
+*/
+	}
 
-        return view('admin.newsletter.create');
-    }
+	public function edit( FormBuilder $formBuilder, $campaignId = null )
+	{
+		$nextMonth		= Carbon::today('Europe/Berlin')->addMonthNoOverflow();
+		$fromDefault 	= $nextMonth->copy()->firstOfMonth();
+		$untilDefault	= $nextMonth->copy()->lastOfMonth();
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreNewsletter $request
-     * @return array|RedirectResponse|Redirector
-     */
-    public function store(StoreNewsletter $request)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
+		$options = [
+			'data'	=> [
+				'campaignId'	=> $campaignId,
+				'fromDefault'	=> $fromDefault,
+				'untilDefault'	=> $untilDefault,
+			]
+		];
+		$model = Newsletter::first();
+		$form  = $formBuilder->create(NewsletterForm::class, ['model' => $model], $options);
 
-        // Store the Newsletter
-        $newsletter = Newsletter::create($sanitized);
+		$formOptions = [
+			'form'      => $form,
+			'title'     => 'Newsletter',
+		];
 
-        if ($request->ajax()) {
-            return ['redirect' => url('admin/newsletters'), 'message' => trans('brackets/admin-ui::admin.operation.succeeded')];
-        }
+		if($options && is_array($options)) {
+			$formOptions += $options;
+		}
 
-        return redirect('admin/newsletters');
-    }
+		if(request()->submit && !$form->isValid()) {
+			return redirect()->back()->withErrors($form->getErrors())->withInput();
+		}
 
-    /**
-     * Display the specified resource.
-     *
-     * @param Newsletter $newsletter
-     * @throws AuthorizationException
-     * @return void
-     */
-    public function show(Newsletter $newsletter)
-    {
-        $this->authorize('admin.newsletter.show', $newsletter);
+		return view('admin.form.newsletter', $formOptions);
+	}
 
-        // TODO your code goes here
-    }
+	public function process( Request $request )
+	{
+		$from		= $request->post('from');
+		$until		= $request->post('until');
+		$title		= $request->post('title');
+		$header		= $request->post('header');
+		$tagID 		= $request->post('tag_id');
+		$tagName	= AddressCategory::where('tag_id',$tagID)->pluck('name')->first();
+		$fromDate	= Carbon::createFromFormat('Y-m-d', $from);
+		$untilDate	= Carbon::createFromFormat('Y-m-d', $until);
+		$events		= Event::eventsForNewsletter($fromDate, $untilDate);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Newsletter $newsletter
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function edit(Newsletter $newsletter)
-    {
-        $this->authorize('admin.newsletter.edit', $newsletter);
+		$html		= $this->render('html', $events, $title, $header);
+		$text		= $this->render('text', $events, $title, $header);
 
+		$settings	= new SettingsEntity([
+			'title'	=> "$title [$tagName]",
+			'subject_line'	=> $title,
+		]);
 
-        return view('admin.newsletter.edit', [
-            'newsletter' => $newsletter,
-        ]);
-    }
+		switch($request->submit) {
+			case 'preview':
+				return $this->preview('html', $events, $title, $header);
+			case 'create':
+				return $this->create($settings, $tagID, $html, $text);
+			case 'edit':
+				return $this->setContent($html, $text);
+			case 'check':
+				return $this->check();
+			case 'test':
+				return $this->test([$this->user->email]);
+			case 'send':
+				return $this->send();
+		}
+	}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdateNewsletter $request
-     * @param Newsletter $newsletter
-     * @return array|RedirectResponse|Redirector
-     */
-    public function update(UpdateNewsletter $request, Newsletter $newsletter)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
+	public function preview( $format, $events, $title, $header = '' )
+	{
+		return view('mail.'.$format.'.newsletter', [
+			'backLink'	=> true,
+			'title'		=> $title,
+			'header'	=> $header,
+			'data'		=> $events,
+		]);
+	}
 
-        // Update changed values Newsletter
-        $newsletter->update($sanitized);
+	public function create($settings, $tagID, $html, $plaintext)
+	{
+		$response = [];
+		try {
+			$response['createCampaign'] = $this->repository->createCampaign($settings, $tagID);
+			if($response) {
+				$campaignID = isset($response['createCampaign']['id']) ? $response['createCampaign']['id'] : null;
+				if($campaignID) {
+					$response['persist'] = $this->persist($campaignID, $tagID);
+				}
+				sleep(5);
+				$response['updateCampaignContent'] = $this->setContent($html, $plaintext);
+			}
+            return view('admin.newsletter.response', [
+                'title'     => 'Newsletter',
+                'response'  => $response,
+            ]);
+		} catch (Exception $e) {
+			$message = $e->getMessage();
+			return view('components.error', compact('message'));
+		}
+	}
 
-        if ($request->ajax()) {
-            return [
-                'redirect' => url('admin/newsletters'),
-                'message' => trans('brackets/admin-ui::admin.operation.succeeded'),
-            ];
-        }
+	public function setContent($html, $plaintext)
+	{
+		return $this->repository->setCampaignContent($html, $plaintext);
+	}
 
-        return redirect('admin/newsletters');
-    }
+	public function persist($campaignID, $tagID)
+	{
+		$newsletter = new Newsletter();
+		$newsletter->id		= $campaignID;
+		$newsletter->tag_id = $tagID;
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param DestroyNewsletter $request
-     * @param Newsletter $newsletter
-     * @throws Exception
-     * @return ResponseFactory|RedirectResponse|Response
-     */
-    public function destroy(DestroyNewsletter $request, Newsletter $newsletter)
-    {
-        $newsletter->delete();
+		try {
+			return $newsletter->saveOrFail();
+		} catch( Exception $e ) {
+			$message = $e->getMessage();
+			return view('components.error', compact('message'));
+		}
+	}
 
-        if ($request->ajax()) {
-            return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-        }
+	public function check()
+	{
+		try {
+			$response = $this->repository->isReadyForSend();
+			return view('admin.newsletter.response', compact('response'));
+		} catch (Exception $e) {
+			$message = $e->getMessage();
+			return view('components.error', compact('message'));
+		}
+	}
 
-        return redirect()->back();
-    }
+	public function test($emails)
+	{
+		try {
+			$response = $this->repository->sendTestCampaign($emails);
+			return view('admin.newsletter.response', compact('response'));
+		} catch (Exception $e) {
+			$message = $e->getMessage();
+			return view('components.error', compact('message'));
+		}
+	}
 
-    /**
-     * Remove the specified resources from storage.
-     *
-     * @param BulkDestroyNewsletter $request
-     * @throws Exception
-     * @return Response|bool
-     */
-    public function bulkDestroy(BulkDestroyNewsletter $request) : Response
-    {
-        DB::transaction(static function () use ($request) {
-            collect($request->data['ids'])
-                ->chunk(1000)
-                ->each(static function ($bulkChunk) {
-                    Newsletter::whereIn('id', $bulkChunk)->delete();
+	public function delete($campaignId)
+	{
+		try {
+			$response = $this->repository->removeCampaign($campaignId);
+			return redirect()->route('admin.newsletterList');
+		} catch (Exception $e) {
+			$message = $e->getMessage();
+			return view('components.error', compact('message'));
+		}
+	}
 
-                    // TODO your code goes here
-                });
-        });
+	public function send()
+	{
+		try {
+			$response = $this->repository->sendCampaign();
+			return view('admin.newsletter.response', compact('response'));
+		} catch (Exception $e) {
+			$message = $e->getMessage();
+			return view('components.error', compact('message'));
+		}
+	}
 
-        return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-    }
+	public function getMembers( $segmentId )
+	{
+		try {
+			$response = $this->repository->getMembers($segmentId);
+			return response()->json([
+				'sid' 		=> $segmentId,
+				'result'	=> $response,
+				'error'		=> null,
+			]);
+		} catch(Exception $e) {
+			return response()->json([
+				'sid' 		=> $segmentId,
+				'result'	=> null,
+				'error'		=> $e->getMessage(),
+			]);
+		}
+	}
+
+	public function render($format, $events, $title, $header = '')
+	{
+		return $this->view($format, $events, $title, $header)->render();
+	}
+
+	public function view($format, $events, $title, $header = '')
+	{
+		return view('mail.'.$format.'.newsletter', [
+			'backLink'	=> false,
+			'title'		=> $title,
+			'header'	=> $header,
+			'data'      => $events,
+		]);
+	}
 }

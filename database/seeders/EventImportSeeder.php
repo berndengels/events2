@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Event;
+use App\ModelsOld\Event;
 use App\Libs\MySeedImporter as Importer;
 use Illuminate\Support\Facades\Log;
 

@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Kyslik\ColumnSortable\Sortable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\Address
@@ -14,13 +16,14 @@ use Illuminate\Support\Carbon;
  * @property int $address_category_id
  * @property string $email
  * @property string $token
- * @property int $info_on_changes
- * @property Carbon|null $created_at
+ * @property int|null $info_on_changes
+ * @property Carbon $created_at
  * @property Carbon|null $updated_at
- * @property-read mixed $resource_url
+ * @property-read AddressCategory|null $addressCategory
  * @method static Builder|Address newModelQuery()
  * @method static Builder|Address newQuery()
  * @method static Builder|Address query()
+ * @method static Builder|Address sortable($defaultParameters = null)
  * @method static Builder|Address whereAddressCategoryId($value)
  * @method static Builder|Address whereCreatedAt($value)
  * @method static Builder|Address whereEmail($value)
@@ -29,27 +32,25 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Address whereToken($value)
  * @method static Builder|Address whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read \App\Models\AddressCategory $addressCategory
  */
 class Address extends Model
 {
-    protected $table = 'address';
-    protected $fillable = [
-        'address_category_id',
-        'email',
-        'token',
-        'info_on_changes',
-    ];
-    protected $appends = ['resource_url'];
+	use Sortable;
 
-    /* ************************ ACCESSOR ************************* */
+	protected $table = 'address';
+    protected $guarded = ['id'];
+    public $timestamps = true;
+	public $sortable = [
+		'address_category_id',
+		'email',
+		'created_at',
+	];
 
-    public function getResourceUrlAttribute()
-    {
-        return url('/admin/addresses/'.$this->getKey());
-    }
-
-    public function addressCategory() {
-        return $this->belongsTo(AddressCategory::class);
-    }
+	/**
+	 * @return BelongsTo
+	 */
+	public function addressCategory()
+	{
+		return $this->belongsTo(AddressCategory::class, 'address_category_id', 'id');
+	}
 }

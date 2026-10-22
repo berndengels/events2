@@ -1,18 +1,20 @@
 <?php
 /**
- * MenuController.php
+ * UserController.php
  *
  * @author    Bernd Engels
  * @created   28.02.19 17:17
- * @copyright Bernd Engels
+ * @copyright Webwerk Berlin GmbH
  */
 namespace App\Http\Controllers\Admin;
 
 use App\Libs\Icons;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Request;
 use Response;
-use App\Models\Menu;
+use Carbon\Carbon;
+use App\ModelsOld\Menu;
 use App\Forms\MenuForm;
 use App\Repositories\MenuRepository;
 use App\Repositories\Tree;
@@ -22,12 +24,15 @@ use App\Http\Controllers\Controller;
 use Kris\LaravelFormBuilder\FormBuilder;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
 use Illuminate\Database\Eloquent\Collection;
-use function PHPUnit\Framework\throwException;
 
 class MenuController extends Controller
 {
     use FormBuilderTrait;
 
+	/**
+	 * @var Menu
+	 */
+    static protected $model = Menu::class;
 	/**
 	 * @var MenuForm
 	 */
@@ -44,15 +49,24 @@ class MenuController extends Controller
 	 * @var Menu
 	 */
 	protected $root;
-	protected $title = 'Menu';
+	protected $entity       = '';
+	protected $title        = '';
+	protected $entityPlural = '';
 
 	public function __construct(){
 		parent::__construct();
-		$this->middleware('admin');
+		$this->middleware('auth');
 
 		$this->repo = new MenuRepository();
 		$this->tree = new Tree();
 		$this->root = Menu::find(1);
+		$this->today = Carbon::today('Europe/Berlin');
+		$model = self::$model;
+		if( $model ) {
+			$this->entity   = lcfirst(class_basename($model));
+			$this->entityPlural = Str::plural($this->entity);
+			$this->title    = ucfirst($this->entity);
+		}
 	}
 
 	public function show( FormBuilder $formBuilder )
@@ -60,12 +74,12 @@ class MenuController extends Controller
 		try {
 			$form  = $formBuilder->create(MenuForm::class);
 			$options    = [
-				'form'  => $form,
-				'title' => $this->title,
+				'form'      => $form,
+				'title'     => $this->title,
 			];
 			return view('admin.menus', $options);
 		} catch(Exception $e) {
-			throw new Exception($e);
+			die($e->getMessage());
 		}
     }
 
@@ -101,10 +115,14 @@ class MenuController extends Controller
 		switch($operation) {
 			case 'get_node':
 				if ( null === $id ) {
-					$data = Menu::defaultOrder()->whereNull('parent_id')->with('descendants')->get();
-//                    $data = Menu::defaultOrder()->where('parent_id', null)->get();
+					$data = Menu::defaultOrder()
+                        ->where('parent_id', null)
+                        ->with(['menuItemType','descendants','children'])
+                        ->get();
 				} else {
-					$data = Menu::defaultOrder()->descendantsOf($id)->toTree();
+					$data = Menu::with('menuItemType','descendants','children')
+                        ->defaultOrder()
+                        ->descendantsOf($id)->toTree();
 				}
 				$result = [];
 				if( $data->count() > 0 ) {
@@ -118,7 +136,7 @@ class MenuController extends Controller
 				}
 				break;
 			case 'get_content':
-				$node = Menu::with('ancestors')->find($id);
+				$node = Menu::with(['menuItemType','ancestors','children'])->find($id);
 				if($node) {
 					/**
 					 * @var $nodeWithAncestors Collection
@@ -133,7 +151,6 @@ class MenuController extends Controller
 						'nodeWithAncestors'	=> $nodeWithAncestors->toArray(),
 						'id'	        => $node->id,
 						'name'	        => $node->name,
-                        'css_class'	    => $node->css_class,
 						'icon'	        => $node->icon,
                         'fa_icon'	    => $node->fa_icon,
 						'url'	        => $node->url,
@@ -163,7 +180,7 @@ class MenuController extends Controller
 				];
 				break;
 			case 'move_node':
-				$node = Menu::find($id);
+				$node = Menu::with('menuItemType')->find($id);
 				$node->lvl = $lvl;
 				$moved = false;
 				$msg = '';
@@ -195,7 +212,7 @@ class MenuController extends Controller
 
 				if($moved) {
 					$node->save();
-				}
+                }
 
 				$result = [
 					'id'		=> $node->id,
@@ -211,9 +228,9 @@ class MenuController extends Controller
 					'id' 		=> $id,
 					'delete'	=> Menu::find($id)->delete(),
 				];
-				break;
+                break;
 			case 'rename_node':
-				$node = Menu::find($id);
+				$node = Menu::with(['menuItemType','descendants','children'])->find($id);
 				$node->name = $text;
 				$node->slug = Str::slug($text, '-');
 				$node->save();
@@ -229,7 +246,7 @@ class MenuController extends Controller
 				break;
 			case 'fix':
 				$result = Menu::fixTree();
-				break;
+                break;
 		}
 		return response()->json($result);
 	}
@@ -254,7 +271,6 @@ class MenuController extends Controller
 				$node->icon					= $data['icon'];
                 $node->fa_icon				= $data['fa_icon'];
 				$node->name					= $data['name'];
-                $node->css_class			= $data['css_class'];
 				$node->is_published 		= isset($data['is_published']) ? 1 : 0;
                 $node->api_enabled 		    = isset($data['api_enabled']) ? 1 : 0;
 				$node->menu_item_type_id	= $type;

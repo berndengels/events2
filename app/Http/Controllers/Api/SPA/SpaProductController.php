@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\SPA;
 
-use App\Models\Product;
+use App\ModelsOld\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SpaProductResource;
 

@@ -1,8 +1,8 @@
 <?php
 namespace App\Events;
 
-use App\Models\Customer;
-use App\Models\Order;
+use App\ModelsOld\Customer;
+use App\ModelsOld\Order;
 use App\Repositories\ShopRepository;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;

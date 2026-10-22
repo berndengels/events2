@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Customer;
-use App\Models\Shipping;
+use App\ModelsOld\Customer;
+use App\ModelsOld\Shipping;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ShippingPolicy
@@ -13,7 +13,7 @@ class ShippingPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param  \App\Models\Customer  $customer
+     * @param Customer $customer
      * @return mixed
      */
     public function ViewAnyShipping(Customer $customer)
@@ -24,8 +24,8 @@ class ShippingPolicy
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\Models\Customer  $customer
-     * @param  \App\Models\Shipping  $shipping
+     * @param Customer $customer
+     * @param Shipping $shipping
      * @return mixed
      */
     public function viewShipping(Customer $customer, Shipping $shipping)
@@ -36,7 +36,7 @@ class ShippingPolicy
     /**
      * Determine whether the user can create models.
      *
-     * @param  \App\Models\Customer  $customer
+     * @param Customer $customer
      * @return mixed
      */
     public function createShipping(Customer $customer)
@@ -47,8 +47,8 @@ class ShippingPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\Customer  $customer
-     * @param  \App\Models\Shipping  $shipping
+     * @param Customer $customer
+     * @param Shipping $shipping
      * @return mixed
      */
     public function updateShipping(Customer $customer, Shipping $shipping)
@@ -59,8 +59,8 @@ class ShippingPolicy
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\Models\Customer  $customer
-     * @param  \App\Models\Shipping  $shipping
+     * @param Customer $customer
+     * @param Shipping $shipping
      * @return mixed
      */
     public function deleteShipping(Customer $customer, Shipping $shipping)
@@ -71,8 +71,8 @@ class ShippingPolicy
     /**
      * Determine whether the user can restore the model.
      *
-     * @param  \App\Models\Customer  $customer
-     * @param  \App\Models\Shipping  $shipping
+     * @param Customer $customer
+     * @param Shipping $shipping
      * @return mixed
      */
     public function restoreShipping(Customer $customer, Shipping $shipping)
@@ -83,8 +83,8 @@ class ShippingPolicy
     /**
      * Determine whether the user can permanently delete the model.
      *
-     * @param  \App\Models\Customer  $customer
-     * @param  \App\Models\Shipping  $shipping
+     * @param Customer $customer
+     * @param Shipping $shipping
      * @return mixed
      */
     public function forceDeleteShipping(Customer $customer, Shipping $shipping)

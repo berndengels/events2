@@ -1,196 +1,49 @@
 <?php
-
+/**
+ * UserController.php
+ *
+ * @author    Bernd Engels
+ * @created   28.02.19 17:17
+ * @copyright Webwerk Berlin GmbH
+ */
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\CategoryExport;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Category\BulkDestroyCategory;
-use App\Http\Requests\Admin\Category\DestroyCategory;
-use App\Http\Requests\Admin\Category\IndexCategory;
-use App\Http\Requests\Admin\Category\StoreCategory;
-use App\Http\Requests\Admin\Category\UpdateCategory;
-use App\Models\Category;
-use Brackets\AdminListing\Facades\AdminListing;
+use App\Http\Requests\CategoryRequest;
+use App\ModelsOld\Category;
+use App\Forms\CategoryForm;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\View\View;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
 
-class CategoryController extends Controller
+class CategoryController extends MainController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @param IndexCategory $request
-     * @return array|Factory|View
-     */
-    public function index(IndexCategory $request)
-    {
-        // create and AdminListing instance for a specific model and
-        $data = AdminListing::create(Category::class)->processRequestAndGet(
-            // pass the request with params
-            $request,
-            // set columns to query
-            ['id', 'name', 'icon'],
-            // set columns to searchIn
-            ['id', 'name', 'icon']
-        );
+    use FormBuilderTrait;
 
-        if ($request->ajax()) {
-            if ($request->has('bulk')) {
-                return [
-                    'bulkItems' => $data->pluck('id')
-                ];
+    static protected $model	= Category::class;
+    static protected $form	= CategoryForm::class;
+
+    public function store(CategoryRequest $request, $id = 0 )
+    {
+        try {
+            if($id > 0) {
+                Category::find($id)->update($request->validated());
+            } else {
+                $saved = Category::create($request->validated());
+                $id = $saved->id;
             }
-            return ['data' => $data];
-        }
-        return view('admin.category.index', ['data' => $data]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function create()
-    {
-        $this->authorize('category.create');
-
-        return view('admin.category.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreCategory $request
-     * @return array|RedirectResponse|Redirector
-     */
-    public function store(StoreCategory $request)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Store the Category
-        $category = Category::create($sanitized);
-
-        if ($request->ajax()) {
-            return ['redirect' => url('admin/categories'), 'message' => trans('brackets/admin-ui::admin.operation.succeeded')];
+        } catch(Exception $e) {
+            return back()->with('error','Fehler: '.$e->getMessage());
         }
 
-        return redirect('admin/categories');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Category $category
-     * @throws AuthorizationException
-     * @return void
-     */
-    public function show(Category $category)
-    {
-        $this->authorize('category.show', $category);
-
-        // TODO your code goes here
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Category $category
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function edit(Category $category)
-    {
-        $this->authorize('category.edit', $category);
-        return view('admin.category.edit', [
-            'category' => $category,
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdateCategory $request
-     * @param Category $category
-     * @return array|RedirectResponse|Redirector
-     */
-    public function update(UpdateCategory $request, Category $category)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Update changed values Category
-        $category->update($sanitized);
-
-        if ($request->ajax()) {
-            return [
-                'redirect' => url('admin/categories'),
-                'message' => trans('brackets/admin-ui::admin.operation.succeeded'),
-            ];
+        switch($request->submit) {
+            case 'save':
+                return redirect()->route('admin.categoryEdit', ['id' => $id]);
+            case 'saveAndBack':
+            default:
+                return redirect()->route('admin.categoryList');
         }
-
-        return redirect('admin/categories');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param DestroyCategory $request
-     * @param Category $category
-     * @throws Exception
-     * @return ResponseFactory|RedirectResponse|Response
-     */
-    public function destroy(DestroyCategory $request, Category $category)
-    {
-        $this->authorize('category.delete', $category);
-        $category->delete();
-
-        if ($request->ajax()) {
-            return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Remove the specified resources from storage.
-     *
-     * @param BulkDestroyCategory $request
-     * @throws Exception
-     * @return Response|bool
-     */
-    public function bulkDestroy(BulkDestroyCategory $request) : Response
-    {
-        $this->authorize('category.bulk-delete');
-        DB::transaction(static function () use ($request) {
-            collect($request->data['ids'])
-                ->chunk(1000)
-                ->each(static function ($bulkChunk) {
-                    Category::whereIn('id', $bulkChunk)->delete();
-                    // TODO your code goes here
-                });
-        });
-
-        return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-    }
-
-    /**
-     * Export entities
-     *
-     * @return BinaryFileResponse|null
-     */
-    public function export(): ?BinaryFileResponse
-    {
-        return Excel::download(app(CategoryExport::class), 'categories.xlsx');
     }
 }

@@ -50,7 +50,7 @@ return [
     | interacting with Cashier related methods, subscriptions, and so on.
     |
     */
-    'model' => env('CASHIER_MODEL', class_exists(App\Models\User::class) ? App\Models\User::class : App\User::class),
+    'model' => env('CASHIER_MODEL', class_exists(App\ModelsOld\User::class) ? App\ModelsOld\User::class : App\User::class),
 
     /*
     |--------------------------------------------------------------------------

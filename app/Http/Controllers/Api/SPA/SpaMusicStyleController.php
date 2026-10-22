@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\SPA;
 
-use App\Models\MusicStyle;
+use App\ModelsOld\MusicStyle;
 use App\Http\Resources\MusicStyleResource;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BandContactRequest;

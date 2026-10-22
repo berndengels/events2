@@ -9,6 +9,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Images;
 use Carbon\Carbon;
 use App\Entities\ImageEntity;
 use App\Entities\EventEntity;
@@ -57,7 +58,8 @@ class EventEntityRepository {
 					->setEventDate($dateObj)
 					->setDomId('e' . $dateObj->format('Ymd'))
 					->setDescriptionSanitized($item->descriptionSanitized)
-                    ->setImages($this->getImageEntities($item->images))
+//                    ->setImages($this->getImageEntities($item->images))
+					->setImages($this->getImageEntities($item->media))
 					->setIsPeriodic($item instanceof EventPeriodic ? 1 : 0)
 					->setCategory($item->category ? $item->category : null)
 					->setTheme($item->theme ? $item->theme : null)
@@ -74,13 +76,13 @@ class EventEntityRepository {
 		return collect([]);
 	}
 
-	protected function getImageEntities(Collection $images): Collection
+	protected function getImageEntities(Collection|null $images = null)
     {
         if($images && $images->count()) {
             /**
-             * @var $image Media
+             * @var $image Images
              */
-            return $images->map(function (Media $image){
+            return $images->map(function (Images $image){
                 $img = new ImageEntity();
                 $img
                     ->setId($image->id)

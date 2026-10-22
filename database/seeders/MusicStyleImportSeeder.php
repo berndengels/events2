@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\MusicStyle;
+use App\ModelsOld\MusicStyle;
 use App\Libs\MySeedImporter as Importer;
 
 class MusicStyleImportSeeder extends Importer

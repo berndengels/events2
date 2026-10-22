@@ -2,7 +2,7 @@
 
 namespace App\Webhook;
 
-use App\Models\Webhook;
+use App\ModelsOld\Webhook;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\Page;
+use App\ModelsOld\Page;
 use App\Libs\MySeedImporter as Importer;
 
 class PageImportSeeder extends Importer

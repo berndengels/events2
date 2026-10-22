@@ -1,7 +1,7 @@
 <?php
 namespace App\Forms;
 
-use App\Models\MenuItemType;
+use App\ModelsOld\MenuItemType;
 //use App\Models\PublicRoute;
 use App\Libs\Routes as MyRoutes;
 use Kris\LaravelFormBuilder\Form;

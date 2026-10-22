@@ -1,206 +1,53 @@
 <?php
-
+/**
+ * UserController.php
+ *
+ * @author    Bernd Engels
+ * @created   28.02.19 17:17
+ * @copyright Webwerk Berlin GmbH
+ */
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\PageExport;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Page\BulkDestroyPage;
-use App\Http\Requests\Admin\Page\DestroyPage;
-use App\Http\Requests\Admin\Page\IndexPage;
-use App\Http\Requests\Admin\Page\StorePage;
-use App\Http\Requests\Admin\Page\UpdatePage;
-use App\Models\Page;
-use Brackets\AdminListing\Facades\AdminListing;
+use App\Http\Requests\PageRequest;
+use App\ModelsOld\Page;
+use App\Forms\PageForm;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\View\View;
+use Illuminate\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Kris\LaravelFormBuilder\FormBuilder;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
 
-class PageController extends Controller
+class PageController extends MainController
 {
+    use FormBuilderTrait;
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @param IndexPage $request
-     * @return array|Factory|View
-     */
-    public function index(IndexPage $request)
+    static protected $model = Page::class;
+    static protected $form = PageForm::class;
+
+    public function store(PageRequest $request, $id = 0 )
     {
-        // create and AdminListing instance for a specific model and
-        $data = AdminListing::create(Page::class)
-            ->processRequestAndGet(
-            // pass the request with params
-            $request,
+        $entity = ($id > 0) ? Page::find($id) : new Page();
+        $values = $request->validated();
 
-            // set columns to query
-            ['id', 'created_by', 'updated_by', 'title', 'is_published'],
+        $entity->title          = $values['title'];
+        $entity->body           = $values['body'];
+        $entity->is_published   = isset($values['is_published']) ? 1 : 0;
 
-            // set columns to searchIn
-            ['id', 'title', 'body'],
-
-            function ($query) use ($request) {
-                $query->with(['createdBy','updatedBy']);
-            }
-        );
-
-        if ($request->ajax()) {
-            if ($request->has('bulk')) {
-                return [
-                    'bulkItems' => $data->pluck('id')
-                ];
-            }
-            return ['data' => $data];
+        try {
+            $entity->saveOrFail();
+            $id = $entity->id;
+        } catch (Exception $e) {
+            return back()->with('error','Fehler: '.$e->getMessage());
         }
 
-        return view('admin.page.index', ['data' => $data]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function create()
-    {
-        $this->authorize('page.create');
-
-        return view('admin.page.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StorePage $request
-     * @return array|RedirectResponse|Redirector
-     */
-    public function store(StorePage $request)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Store the Page
-        $page = Page::create($sanitized);
-
-        if ($request->ajax()) {
-            return ['redirect' => url('admin/pages'), 'message' => trans('brackets/admin-ui::admin.operation.succeeded')];
+        switch($request->submit) {
+            case 'save':
+                return redirect()->route('admin.pageEdit', ['id' => $id]);
+            case 'saveAndBack':
+            default:
+                return redirect()->route('admin.pageList');
         }
-
-        return redirect('admin/pages');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Page $page
-     * @throws AuthorizationException
-     * @return void
-     */
-    public function show(Page $page)
-    {
-        $this->authorize('page.show', $page);
-
-        // TODO your code goes here
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Page $page
-     * @throws AuthorizationException
-     * @return Factory|View
-     */
-    public function edit(Page $page)
-    {
-        $this->authorize('page.edit', $page);
-
-
-        return view('admin.page.edit', [
-            'page' => $page,
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdatePage $request
-     * @param Page $page
-     * @return array|RedirectResponse|Redirector
-     */
-    public function update(UpdatePage $request, Page $page)
-    {
-        // Sanitize input
-        $sanitized = $request->getSanitized();
-
-        // Update changed values Page
-        $page->update($sanitized);
-
-        if ($request->ajax()) {
-            return [
-                'redirect' => url('admin/pages'),
-                'message' => trans('brackets/admin-ui::admin.operation.succeeded'),
-            ];
-        }
-
-        return redirect('admin/pages');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param DestroyPage $request
-     * @param Page $page
-     * @throws Exception
-     * @return ResponseFactory|RedirectResponse|Response
-     */
-    public function destroy(DestroyPage $request, Page $page)
-    {
-        $page->delete();
-
-        if ($request->ajax()) {
-            return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Remove the specified resources from storage.
-     *
-     * @param BulkDestroyPage $request
-     * @throws Exception
-     * @return Response|bool
-     */
-    public function bulkDestroy(BulkDestroyPage $request) : Response
-    {
-        DB::transaction(static function () use ($request) {
-            collect($request->data['ids'])
-                ->chunk(1000)
-                ->each(static function ($bulkChunk) {
-                    Page::whereIn('id', $bulkChunk)->delete();
-
-                    // TODO your code goes here
-                });
-        });
-
-        return response(['message' => trans('brackets/admin-ui::admin.operation.succeeded')]);
-    }
-
-    /**
-     * Export entities
-     *
-     * @return BinaryFileResponse|null
-     */
-    public function export(): ?BinaryFileResponse
-    {
-        return Excel::download(app(PageExport::class), 'pages.xlsx');
     }
 }
