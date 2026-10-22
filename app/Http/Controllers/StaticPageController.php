@@ -19,12 +19,15 @@ class StaticPageController extends BaseController
 	 * @param $page
 	 * @return Factory|View
 	 */
-    public function get($slug) {
-        $view   = view('public.static.' . $slug, ['data' => null ]);
+    public function get($slug = null) {
+		if($slug) {
+			$view   = view('public.static.' . $slug, ['data' => null ]);
 
-        if( file_exists($view->getPath()) ) {
-            return $view;
-        }
+			if( file_exists($view->getPath()) ) {
+				return $view;
+			}
+		}
+
         return null;
     }
 }

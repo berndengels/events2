@@ -5,6 +5,8 @@ use App\ModelsOld\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController as PublicEventController;
+use App\Http\Controllers\PageController as PublicPageController;
+use App\Http\Controllers\StaticPageController as PublicStaticPageController;
 
 Auth::routes();
 Auth::routes(['register' => false]);
@@ -32,7 +34,7 @@ $pathStaticPages = collect(config('view.paths'))->map(function($path) use (&$sta
 });
 if($staticPages->count() > 0)  {
 	$staticPages->each(function($slug){
-		Route::middleware('web')->get("/static/$slug", 'StaticPageController@get')->name("public.static.$slug");
+		Route::middleware('web')->get("/static/{slug?}", [PublicStaticPageController::class, 'get'])->name("public.static.$slug");
 	});
 }
 
@@ -40,7 +42,6 @@ Route::group(['middleware' => 'web'], function () {
 	Route::get('/feed', [PublicEventController::class, 'feed'])->name('public.feed');
 	Route::get('/ical', [PublicEventController::class, 'ical'])->name('public.ical');
 	Route::get('/', [PublicEventController::class, 'getActualMergedEvents'])->name('public.events');
-//	Route::get('/', fn() => 'Hello')->name('public.events');
 	Route::get('show/{date}', [PublicEventController::class, 'show'])->name('public.event.eventsShow');
 	//Route::get('calendar/{year}/{month}', 'EventController@calendar')->name('public.eventCalendar');
 	Route::get('calendar', [PublicEventController::class, 'calendar'])->name('public.eventCalendar');
@@ -48,13 +49,13 @@ Route::group(['middleware' => 'web'], function () {
 
 $categories = Category::whereIsPublished(true)->get();
 foreach($categories as $item) {
-	Route::middleware('web')->get('/events/category/'.$item->slug, 'EventController@getActualMergedEventsByCategory')->name('public.eventsByCategory.' . $item->slug);
+	Route::middleware('web')->get('/events/category/'.$item->slug, [PublicEventController::class, 'getActualMergedEventsByCategory'])->name('public.eventsByCategory.' . $item->slug);
 }
 $themes = Theme::where('is_published', 1)->get();
 foreach($themes as $item) {
-	Route::middleware('web')->get('/theme/'.$item->slug, 'EventController@getActualMergedEventsByTheme')->name('public.eventsByTheme.'. $item->slug);
+	Route::middleware('web')->get('/theme/'.$item->slug, [PublicEventController::class, 'getActualMergedEventsByTheme'])->name('public.eventsByTheme.'. $item->slug);
 }
-Route::get('/page/{slug}', 'PageController@get')->name('public.page');
+Route::get('/page/{slug}', [PublicPageController::class, 'get'])->name('public.page');
 
 Route::group([
 	'prefix'     => 'contact',

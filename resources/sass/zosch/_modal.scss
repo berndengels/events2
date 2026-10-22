@@ -1,0 +1,44 @@
+.modal {
+	.modal-dialog {
+		border: 1px solid #fff;
+		border-radius: 20px;
+		.modal-content {
+			background-color: #000;
+			color: $bgColor;
+			border-radius: 20px;
+			.modal-header {
+				button.close {
+					position: absolute;
+					right: 10px;
+					top: 5px;
+					font-weight: bold;
+					color: $color;
+				}
+			}
+			.modal-body {
+				.icon-list {
+					display: flex;
+					img {
+						height: 32px;
+						width: auto;
+						//                    display: inline-flex;
+						margin: 5px;
+						border: 1px solid #aaa;
+					}
+				}
+
+				iframe {
+					max-width: 100%;
+				}
+			}
+			.modal-footer {
+				display: block;
+				float: left;
+				div {
+					text-align: left;
+				}
+				overflow: hidden;
+			}
+		}
+	}
+}

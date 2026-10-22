@@ -63,7 +63,6 @@ class Page extends Model
      */
     protected $fillable = ['title', 'body', 'created_by', 'updated_by'];
 	protected $dates = ['created_at','updated_at'];
-	protected $with = ['audios'];
 
     public static function boot() {
         parent::boot();
@@ -78,14 +77,6 @@ class Page extends Model
 			$entity->slug = Str::slug(str_replace('.','-',$entity->title), '-', 'de');
 		});
     }
-
-	/**
-	 * @return HasMany
-	 */
-	public function audios()
-	{
-		return $this->hasMany(Audios::class);
-	}
 
 	/**
 	 * @param string $value

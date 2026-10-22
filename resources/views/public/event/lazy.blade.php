@@ -39,16 +39,11 @@
 
         <div id="calendar" class="m-0 p-0"></div>
     </div>
-
-    @if(isset($schokiStyle))
-    <!--div class="row">Style: {{ $schokiStyle }}</div-->
-    @endif
-
 @endsection
 
 @section('inline-scripts')
     <script>
-        $(function($) {
+        $(($) => {
             var scrollDelay = 0,
                 collapseItems = [],
                 firstLoad = true;
@@ -149,8 +144,6 @@
                 legend: false, // object array, [{type: string, label: string, classname: string}]
             });
         });
-
     </script>
-
 @endsection
 

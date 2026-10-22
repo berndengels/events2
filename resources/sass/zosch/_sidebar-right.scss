@@ -1,0 +1,105 @@
+.sidebar-right {
+	position: fixed;
+	right: 100px;
+
+	@include media("<desktop") {
+		display: none;
+	}
+
+	.header {
+		span {
+			display: inline-block;
+			vertical-align: middle;
+			font-size: 2.0rem;
+			font-weight: bold;
+			color: $color;
+		}
+		ion-icon {
+			display: inline-block;
+			font-size: 2.0rem;
+			color: $color;
+			vertical-align: middle;
+			margin: -3px 5px 0 0;
+		}
+	}
+
+	.zabuto_calendar {
+		width: 80%;
+		min-width: 280px;
+		max-width: 100%;
+		height: auto;
+		margin-top: 5px;
+		border: 2px solid $color;
+		border-radius: 10px;
+		box-shadow: 5px 5px 10px $color;
+		background-color: $bgColor;
+		.badge {
+			font-size: 100%;
+		}
+		.badge-event {
+			color: $color;
+		}
+		table {
+			width: 100%;
+			border: none;
+			border-collapse: collapse;
+
+			tr {
+				td, th {
+					background-color: transparent;
+					color: $color;
+					font-weight: 400;
+					font-size: 100%;
+					border: none;
+				}
+				&.calendar-month-header {
+					padding: 0;
+					margin: 0;
+					background-color: transparent;
+					border-radius: 10px !important;
+					border-top-right-radius: 10px !important;
+
+					td {
+						border: none;
+						padding-top: 10px;
+						margin: 0;
+						background-color: $bgColor;
+						color: $color;
+						span {
+							padding: 0;
+							margin: 0;
+							line-height: 1;
+							font-weight: bold;
+						}
+						.calendar-month-navigation {
+							padding: 0;
+							margin: 0;
+							color: $color;
+							background-color: $bgColor;
+							ion-icon {
+								font-size: 150%;
+								color: $color;
+							}
+						}
+					}
+					td:first-child {
+						border-top-left-radius: 10px !important;
+					}
+					td:last-child {
+						border-top-right-radius: 10px !important;
+					}
+				}
+				&.calendar-dow-header {
+					th {
+						background-color: $color;
+						color: $bgColor;
+					}
+				}
+
+			}
+		}
+		div.legend {
+//			display: none;
+		}
+	}
+}
