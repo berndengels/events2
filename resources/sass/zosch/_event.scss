@@ -14,14 +14,16 @@
 			max-height: 150px;
 			padding: 0;
 			margin: 0;
-			background-color: $color;
+//			background-color: $color;
+			background-color: #000;
 
 			.subHeader {
 				&.accordion-button {
 					cursor: pointer;
 					display: block;
 					padding: 5px 10px;
-					background-color: $color;
+//					background-color: $color;
+					background-color: #000;
 					color: $colorSubHeader;
 					font-weight: bold;
 					font-size: 1.2rem;
