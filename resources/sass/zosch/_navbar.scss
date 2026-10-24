@@ -1,44 +1,46 @@
-nav.navbar {
-	&.bg-black {
-		background-color: #000;
-	}
-	&.navbar-dark {
-		.nav-item {
-			.nav-link {
-				line-height: 1.5rem;
-				vertical-align: middle;
-				color: $sFontColor;
-				ion-icon {
-					font-size: 1.5rem;
+nav {
+	&.navbar {
+		&.bg-black {
+			background-color: #000;
+		}
+		&.navbar-dark {
+			.nav-item {
+				.nav-link {
+					line-height: 1.5rem;
+					vertical-align: middle;
+					color: $sFontColor;
+					ion-icon {
+						font-size: 1.5rem;
+					}
 				}
 			}
 		}
-	}
-	.dropdown-menu {
-		&.show {
-			box-shadow: 5px 5px 10px #000;
-			background-color: #000;
-			z-index: 10000;
-			.dropdown-item {
-				color: $sFontColor;
-			}
-			.dropdown-item:hover {
-				background-color: #900;
-			}
-			@include media("<tablet") {
-				box-shadow: none;
-				background-color: $sRed;
+		.dropdown-menu {
+			&.show {
+				box-shadow: 5px 5px 10px #000;
+				background-color: #000;
+				z-index: 10000;
 				.dropdown-item {
 					color: $sFontColor;
 				}
 				.dropdown-item:hover {
 					background-color: #900;
 				}
+				@include media("<tablet") {
+					box-shadow: none;
+					background-color: $sRed;
+					.dropdown-item {
+						color: $sFontColor;
+					}
+					.dropdown-item:hover {
+						background-color: #900;
+					}
+				}
 			}
 		}
-	}
-	.navbar-brand {
-		font-size: 2.0rem;
-		font-weight: bold;
+		.navbar-brand {
+			font-size: 2.0rem;
+			font-weight: bold;
+		}
 	}
 }

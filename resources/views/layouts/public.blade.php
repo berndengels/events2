@@ -32,7 +32,7 @@
 
 @include('components.flash-message')
 
-<div class="container col-12">
+<div class="container-fluid col-12">
     <div class="header">
         @section('header')
             @include('public.templates.topNavigation')

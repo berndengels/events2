@@ -130,7 +130,7 @@ class Event extends Model
      */
     public function category()
     {
-        return $this->belongsTo('App\Models\Category');
+        return $this->belongsTo(Category::class);
     }
 
     /**
@@ -138,7 +138,7 @@ class Event extends Model
      */
     public function theme()
     {
-        return $this->belongsTo('App\Models\Theme');
+        return $this->belongsTo(Theme::class);
     }
 
     /**
@@ -146,34 +146,7 @@ class Event extends Model
      */
     public function images()
     {
-        return $this->hasMany('App\Models\Images');
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function audios()
-    {
-        return $this->hasMany('App\Models\Audios');
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function videos()
-    {
-        return $this->hasMany('App\Models\Videos');
-    }
-
-    /**
-     * @param string $value
-     * @return array
-     */
-    public function getLinksAttribute($value = '')
-    {
-        if('' !== $value) {
-            return collect(preg_split("/[\n\r]+/", $value));
-        }
+        return $this->hasMany(Images::class);
     }
 
 	public function getEventLinkAttribute()
