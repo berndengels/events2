@@ -2,8 +2,8 @@
 namespace App\Libs;
 
 use Route;
-use App\ModelsOld\Theme;
-use App\ModelsOld\Category;
+use App\Models\Theme;
+use App\Models\Category;
 use App\Repositories\PageRepository;
 
 /**

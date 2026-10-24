@@ -60,7 +60,7 @@ class EventEntityRepository {
 					->setDomId('e' . $dateObj->format('Ymd'))
 					->setDescriptionSanitized($item->descriptionSanitized)
 //                    ->setImages($this->getImageEntities($item->images))
-					->setImages($this->getImageEntities($item->media))
+					->setImages($this->getImageEntities($item->images))
 					->setIsPeriodic($item instanceof EventPeriodic ? 1 : 0)
 					->setCategory($item->category ? $item->category : null)
 					->setTheme($item->theme ? $item->theme : null)
@@ -87,9 +87,12 @@ class EventEntityRepository {
                 $img = new ImageEntity();
                 $img
                     ->setId($image->id)
-                    ->setFileName($image->file_name)
-                    ->setSize($image->size)
-                    ->setUrl($image->getUrl())
+                    ->setInternalName($image->internal_filename)
+					->setExternalName($image->external_filename)
+					->setTitle($image->title)
+					->setWidth($image->width)
+					->setHeight($image->height)
+					->setUrl( '/storage/images/' . $image->internal_filename)
                     ->toObject()
                 ;
                 return $img;

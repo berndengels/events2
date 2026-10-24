@@ -1,7 +1,7 @@
 <?php
 
-use App\ModelsOld\Theme;
-use App\ModelsOld\Category;
+use App\Models\Theme;
+use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController as PublicEventController;
@@ -60,8 +60,8 @@ Route::group(['middleware' => 'web'], function () {
 	Route::get('/ical', [PublicEventController::class, 'ical'])->name('public.ical');
 	Route::get('/', [PublicEventController::class, 'getActualMergedEvents'])->name('public.events');
 	Route::get('show/{date}', [PublicEventController::class, 'show'])->name('public.event.eventsShow');
-	//Route::get('calendar/{year}/{month}', 'EventController@calendar')->name('public.eventCalendar');
-	Route::get('calendar', [PublicEventController::class, 'calendar'])->name('public.eventCalendar');
+	Route::get('calendar/{year}/{month}', [PublicEventController::class, 'calendar'])->name('public.eventCalendar');
+//	Route::get('calendar', [PublicEventController::class, 'calendar'])->name('public.eventCalendar');
 });
 
 $categories = Category::whereIsPublished(true)->get();

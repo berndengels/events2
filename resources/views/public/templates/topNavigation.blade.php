@@ -1,4 +1,4 @@
-<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-black p-2" id="topNav">
+<nav class="navbar fixed-top navbar-expand-sm navbar-dark bg-black p-2" id="topNav">
     <div class="container-fluid">
         <a class="navbar-brand" href="/events">Zosch-Berlin</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">

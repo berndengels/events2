@@ -10,7 +10,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Libs\Icons;
 use Exception;
-use Illuminate\Support\Facades\Cache;
 use Request;
 use Response;
 use Carbon\Carbon;

@@ -93,4 +93,9 @@ class Images extends Media
 			get: fn () => config('event.maxImageHeight'),
 		);
 	}
+
+	public function event()
+	{
+		return $this->belongsTo(Event::class, 'event_id', 'id');
+	}
 }

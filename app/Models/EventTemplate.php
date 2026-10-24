@@ -91,10 +91,13 @@ class EventTemplate extends Model
     /**
      * @return HasMany
      */
-    public function images()
-    {
-        return $this->hasMany('App\Models\Images');
-    }
+	/**
+	 * @return HasMany
+	 */
+	public function images()
+	{
+		return $this->hasMany(Images::class, 'event_template_id', 'id');
+	}
 
     /**
      * @param string $value

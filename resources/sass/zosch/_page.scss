@@ -1,0 +1,13 @@
+.page {
+	.pageContent {
+		background-color: $bgColor;
+		table {
+			background-color: $bgColor;
+			tr {
+				td {
+					background-color: $bgColor;
+				}
+			}
+		}
+	}
+}

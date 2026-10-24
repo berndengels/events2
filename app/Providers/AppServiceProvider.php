@@ -15,6 +15,7 @@ use App\View\Components\Form\Input\Time;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
@@ -49,8 +50,8 @@ class AppServiceProvider extends ServiceProvider
         if(!session()->isStarted()) {
             session()->start();
         }
-
-        Schema::defaultStringLength(191);
+		Carbon::setLocale('de');
+		Schema::defaultStringLength(191);
 		Paginator::useBootstrap();
 
 		/*

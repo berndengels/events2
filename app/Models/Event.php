@@ -146,7 +146,7 @@ class Event extends Model
      */
     public function images()
     {
-        return $this->hasMany(Images::class);
+        return $this->hasMany(Images::class, 'event_id', 'id');
     }
 
 	public function getEventLinkAttribute()

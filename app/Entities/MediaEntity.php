@@ -39,6 +39,8 @@ class MediaEntity extends Entity {
 	 */
 	protected $filesize;
 
+	protected $url;
+
     /**
      * @return mixed
      */
@@ -134,6 +136,23 @@ class MediaEntity extends Entity {
 	 */
 	public function setFilesize($filesize) {
 		$this->filesize = $filesize;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getUrl()
+	{
+		return $this->url;
+	}
+
+	/**
+	 * @param mixed $url
+	 */
+	public function setUrl($url)
+	{
+		$this->url = $url;
 		return $this;
 	}
 }

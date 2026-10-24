@@ -133,29 +133,13 @@ class EventPeriodic extends Model
         return $this->belongsTo('App\Models\Theme');
     }
 
-    /**
-     * @return HasMany
-     */
-    public function images()
-    {
-        return $this->hasMany('App\Models\Images');
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function audios()
-    {
-        return $this->hasMany('App\Models\Audios');
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function videos()
-    {
-        return $this->hasMany('App\Models\Videos');
-    }
+	/**
+	 * @return HasMany
+	 */
+	public function images()
+	{
+		return $this->hasMany(Images::class, 'event_periodic_id', 'id');
+	}
 
     /**
      * @param string $value

@@ -12,17 +12,14 @@
     <meta name="keywords" content="Zosch,Berlin,Musik,Musik Cafe,Kneipe,Kultur,Szene,Subkultur,Konzerte,Livemusik,live music,Veranstaltungs-Kneipe,Veranstaltungen,Lesung,alternativ" />
     <meta http-equiv="Content-Security-Policy"
           content="default-src * data: blob: 'self' 'unsafe-inline';script-src * data: blob: 'self' 'inline' 'unsafe-inline' 'unsafe-eval';img-src * 'self' data:"/>
-    <meta http-equiv="imagetoolbar" content="no" />
+    <!--meta http-equiv="imagetoolbar" content="no" /-->
     @yield('extra-headers-top')
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" type="text/css">
     <link href="https://unpkg.com/ionicons@4.2.2/dist/css/ionicons.min.css" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="{{ asset('css/app.css') }}" />
     <!--script src="https://code.jquery.com/jquery-1.12.4.js"></script-->
     <script src="{{ asset('js/app.js') }}" type="text/javascript" charset="utf-8"></script>
-    <!--script src="https://unpkg.com/ionicons@4.2.2/dist/ionicons.js"></script-->
-    <!--script src="https://js.stripe.com/v3" async></script-->
     @yield('extra-headers')
-
 </head>
 <body>
 
@@ -32,7 +29,7 @@
 
 @include('components.flash-message')
 
-<div class="container-fluid col-12">
+<div class="container">
     <div class="header">
         @section('header')
             @include('public.templates.topNavigation')
