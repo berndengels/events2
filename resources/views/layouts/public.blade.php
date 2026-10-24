@@ -29,7 +29,7 @@
 
 @include('components.flash-message')
 
-<div class="container">
+<div class="container-fluid">
     <div class="header">
         @section('header')
             @include('public.templates.topNavigation')
@@ -37,15 +37,15 @@
         @yield('header-content')
     </div>
 
-    <div class="main row">
-        <div id="content" class="content col-12 mb-5">
+    <div class="main">
+        <div id="content" class="content mb-5">
             @yield('sidebarLeft')
             @yield('content')
             @yield('sidebarRight')
         </div>
     </div>
 
-    <div class="footer row">
+    <div class="footer">
         @section('bottom-navigation')
             @include('public.templates.bottomNavigation')
         @show

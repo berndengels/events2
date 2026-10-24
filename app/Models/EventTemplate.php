@@ -99,17 +99,6 @@ class EventTemplate extends Model
 		return $this->hasMany(Images::class, 'event_template_id', 'id');
 	}
 
-    /**
-     * @param string $value
-     * @return array
-     */
-    public function getLinksAttribute($value = '')
-    {
-        if('' !== $value) {
-            return collect(preg_split("/[\n\r]+/", $value));
-        }
-    }
-
     public function getDescriptionTextAttribute()
     {
         if($this->description) {

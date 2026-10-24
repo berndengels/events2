@@ -1,6 +1,7 @@
 .eventContainer {
 	display: block;
-	margin-top: 10px;
+	margin-top: 80px;
+	margin-bottom: 100px;
 	background-color: $bgColor;
 	.event {
 		display: block;
@@ -17,6 +18,7 @@
 
 			.subHeader {
 				&.accordion-button {
+					cursor: pointer;
 					display: block;
 					padding: 5px 10px;
 					background-color: $color;

@@ -24,7 +24,6 @@ class EventEntityRepository {
 		if(!$event) {
 			return null;
 		}
-
 		$attributes = $event->getAttributes();
 		unset($attributes['event_date']);
 		$entity 	= new EventEntity($attributes);
@@ -38,7 +37,7 @@ class EventEntityRepository {
 			->setIsPeriodic($event instanceof EventPeriodic ? 1 : 0)
 			->setCategory($event->category ? $event->category : null)
 			->setTheme($event->theme ? $event->theme : null)
-            ->setLinks($event->links)
+            ->setLinks($event->links ?? null)
 			->setCreatedBy($event->createdBy)
 			->setUpdatedBy($event->updatedBy ? $event->updatedBy : $event->createdBy)
 		;
@@ -59,7 +58,6 @@ class EventEntityRepository {
 					->setEventDate($dateObj)
 					->setDomId('e' . $dateObj->format('Ymd'))
 					->setDescriptionSanitized($item->descriptionSanitized)
-//                    ->setImages($this->getImageEntities($item->images))
 					->setImages($this->getImageEntities($item->images))
 					->setIsPeriodic($item instanceof EventPeriodic ? 1 : 0)
 					->setCategory($item->category ? $item->category : null)

@@ -104,7 +104,7 @@ class Event extends Model
         'descriptionSanitized',
         'descriptionText',
         'descriptionWithoutVideo',
-        'eventLink',
+//        'eventLink',
     ];
     protected $dates = [
         'created_at',
@@ -149,11 +149,12 @@ class Event extends Model
         return $this->hasMany(Images::class, 'event_id', 'id');
     }
 
+/*
 	public function getEventLinkAttribute()
 	{
 		return route('public.event.eventsShow', $this);
 	}
-
+*/
     public function getDescriptionSanitizedAttribute()
     {
         if($this->description) {

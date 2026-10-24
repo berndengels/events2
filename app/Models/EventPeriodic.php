@@ -141,17 +141,6 @@ class EventPeriodic extends Model
 		return $this->hasMany(Images::class, 'event_periodic_id', 'id');
 	}
 
-    /**
-     * @param string $value
-     * @return array
-     */
-    public function getLinksAttribute($value = '')
-    {
-        if('' !== $value) {
-			return collect(preg_split("/[\n\r]+/", $value));
-        }
-    }
-
     public function getPositionAttribute()
     {
         $position = config('event.periodicPosition');

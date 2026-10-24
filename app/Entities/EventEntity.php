@@ -171,16 +171,6 @@ class EventEntity extends Entity {
 		return $this->links;
 	}
 
-	public function getHtmlLinks()
-	{
-		if($this->links && $this->links->count()) {
-			return $this->links->map(function($item) {
-				return "<a href='$item' target='_blank'>$item</a>";
-			});
-		}
-		return null;
-	}
-
 	/**
 	 * @param mixed $links
 	 */
@@ -189,6 +179,16 @@ class EventEntity extends Entity {
 			$this->links = collect(preg_split("/[\n\r]+/", $links));
 		}
 		return $this;
+	}
+
+	public function getHtmlLinks()
+	{
+		if($this->links && $this->links->count()) {
+			return $this->links->map(function($item) {
+				return "<a href='$item' target='_blank'>$item</a>";
+			});
+		}
+		return null;
 	}
 
 	/**

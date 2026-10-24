@@ -1,40 +1,10 @@
 nav {
 	&.navbar {
-		&.navbar-expand-sm {
+		&.navbar-expand {
 			.container-fluid {
 				.navbar-brand {
 					font-size: 2.0rem;
 					font-weight: bold;
-				}
-				div {
-					&.collapse {
-						&.navbar-collapse {
-							min-width: 0 !important;
-							width: auto !important;
-							display: inline !important;
-							@media screen {
-								min-width: 0 !important;
-								margin: 0;
-							}
-							ul {
-								&.navbar-nav {
-									width: auto !important;
-									max-width: 150px !important;
-									@media screen {
-										min-width: 0 !important;
-										margin: 0;
-									}
-									li {
-										&.nav-item {
-											&.dropdown {
-
-											}
-										}
-									}
-								}
-							}
-						}
-					}
 				}
 			}
 		}
