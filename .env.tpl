@@ -42,14 +42,19 @@ REDIS_PASSWORD=null
 REDIS_PORT=6379
 
 # smtp
-MAIL_DRIVER=smtp
-MAIL_HOST=smtp.cryptix.net
-MAIL_PORT=587
-MAIL_USERNAME=shop@schokoladen-mitte.de
+MAIL_MAILER=smtp
+MAIL_HOST=goldenacker.de
+MAIL_PORT=25
+MAIL_USERNAME=engels@goldenacker.de
 MAIL_PASSWORD=
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=shop@schokoladen-mitte.de
-MAIL_FROM_NAME="Schokoladen Shop"
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=engels@goldenacker.de
+MAIL_FROM_NAME="${APP_NAME}"
+
+EXCEPTION_EMAIL_ENABLED=true
+EXCEPTION_TO_EMAIL_ADDRESS=engels@goldenacker.de
+EXCEPTION_FROM_EMAIL_ADDRESS=engels@goldenacker.de
+EXCEPTION_EMAIL_SUBJECT="${APP_NAME} Error"
 
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=

@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\CategoryRequest;
-use App\ModelsOld\Category;
+use App\Models\Category;
 use App\Forms\CategoryForm;
 use Exception;
 use Illuminate\Support\Facades\Validator;

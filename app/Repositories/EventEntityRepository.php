@@ -29,6 +29,7 @@ class EventEntityRepository {
 		unset($attributes['event_date']);
 		$entity 	= new EventEntity($attributes);
 		$dateObj	= Carbon::createFromFormat('Y-m-d', $date, 'Europe/Berlin');
+
 		$entity
 			->setEventDate($dateObj)
 			->setDomId('e' . $dateObj->format('Ymd'))
@@ -63,7 +64,7 @@ class EventEntityRepository {
 					->setIsPeriodic($item instanceof EventPeriodic ? 1 : 0)
 					->setCategory($item->category ? $item->category : null)
 					->setTheme($item->theme ? $item->theme : null)
-                    ->setLinks($item->links)
+                    ->setLinks($item->links ?? null)
 					->setCreatedBy($item->createdBy)
 					->setUpdatedBy($item->updatedBy ? $item->updatedBy : $item->createdBy)
 				;

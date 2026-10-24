@@ -14,10 +14,11 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @var array
      */
+/*
     protected $policies = [
         Shipping::class => ShippingPolicy::class,
     ];
-
+*/
     /**
      * Register any authentication / authorization services.
      *
@@ -25,13 +26,12 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerPolicies();
+//        $this->registerPolicies();
         // Implicitly grant "Super Admin" role all permission checks using can()
         Gate::before(function ($user, $ability) {
             if ($user->hasRole('Administrator')) {
                 return true;
             }
         });
-
     }
 }

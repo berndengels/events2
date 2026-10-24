@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\ThemeRequest;
-use App\ModelsOld\Theme;
+use App\Models\Theme;
 use App\Forms\ThemeForm;
 use Exception;
 use Illuminate\Support\Facades\Validator;

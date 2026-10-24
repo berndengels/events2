@@ -111,7 +111,7 @@ class AdminUser extends Authenticatable
 	{
 		return $this->belongsToMany(
             MusicStyle::class,
-            'user_music_styles'
+            'admin_users_music_style'
         );
 	}
 

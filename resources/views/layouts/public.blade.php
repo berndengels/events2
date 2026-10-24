@@ -8,8 +8,8 @@
     <meta name="robots" content="index, follow" />
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="0" />
-    <meta name="description" content="Schokoladen-Mitte Berlin" />
-    <meta name="keywords" content="Schokoladen,Berlin,Musik,Musik Cafe,Kneipe,Kultur,Szene,Subkultur,Konzerte,Livemusik,live music,Veranstaltungs-Kneipe,Veranstaltungen,Lesung,alternativ" />
+    <meta name="description" content="Zosch-Berlin" />
+    <meta name="keywords" content="Zosch,Berlin,Musik,Musik Cafe,Kneipe,Kultur,Szene,Subkultur,Konzerte,Livemusik,live music,Veranstaltungs-Kneipe,Veranstaltungen,Lesung,alternativ" />
     <meta http-equiv="Content-Security-Policy"
           content="default-src * data: blob: 'self' 'unsafe-inline';script-src * data: blob: 'self' 'inline' 'unsafe-inline' 'unsafe-eval';img-src * 'self' data:"/>
     <meta http-equiv="imagetoolbar" content="no" />
@@ -20,7 +20,7 @@
     <!--script src="https://code.jquery.com/jquery-1.12.4.js"></script-->
     <script src="{{ asset('js/app.js') }}" type="text/javascript" charset="utf-8"></script>
     <!--script src="https://unpkg.com/ionicons@4.2.2/dist/ionicons.js"></script-->
-    <script src="https://js.stripe.com/v3" async></script>
+    <!--script src="https://js.stripe.com/v3" async></script-->
     @yield('extra-headers')
 
 </head>
@@ -55,14 +55,7 @@
         @yield('footer-content')
     </div>
 </div>
-<div class="background_right h-100">
-    <img class="h-100 img-responsive" src="/img/the_dark_art.png" width="66px" height="718px" alt="Darkside" title="Darlside">
-</div>
 @yield('inline-scripts')
-
-@if(config('piwik.url'))
-    @include('public.analytic.piwik')
-@endif
 
 </body>
 </html>

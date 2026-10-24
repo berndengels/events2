@@ -2,7 +2,7 @@
 
 namespace App\ModelsOld;
 
-use App\ModelsOld\Customer;
+use App\Models\Customer;
 use Eloquent;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Database\Eloquent\Builder;

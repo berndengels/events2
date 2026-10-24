@@ -10,10 +10,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Forms\AddressCategoryFilterForm;
 use App\Http\Requests\AddressRequest;
-use App\ModelsOld\Address;
+use App\Models\Address;
 use App\Forms\SearchForm;
 use App\Forms\AddressForm;
-use App\ModelsOld\Event;
+use App\Models\Event;
 use App\Repositories\NewsletterRepository;
 use Carbon\Carbon;
 use Exception;

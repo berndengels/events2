@@ -38,23 +38,7 @@ nav.navbar {
 		}
 	}
 	.navbar-brand {
-		img {
-			width: auto;
-			height: 40px;
-			@include media("<=tablet") {
-				max-height: 18px;
-			}
-
-		}
-		img:last-child {
-			margin-left: 10px;
-		}
-	}
-	.nav-link {
-		img {
-			clear: none;
-			width: auto;
-			height: 20px;
-		}
+		font-size: 2.0rem;
+		font-weight: bold;
 	}
 }

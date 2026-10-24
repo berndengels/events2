@@ -4,18 +4,18 @@
  *
  * @author    Bernd Engels
  * @created   25.02.19 14:47
- * @copyright Bernd Engels
+ * @copyright Webwerk Berlin GmbH
  */
 namespace App\Forms;
 
-use App\ModelsOld\AddressCategory;
+use App\Models\AddressCategory;
 use Kris\LaravelFormBuilder\Form;
 use Kris\LaravelFormBuilder\Field;
 
 class NewsletterSubscribeForm extends Form
 {
     protected $formOptions = [
-        'id'    => 'frmSubscribeNewsletter',
+        'id'    => 'sendNewsletterSubscribe',
         'method' => 'POST',
         'url' => '/contact/sendNewsletterSubscribe',
 		'class' => 'mx-sm-1 mx-md-3 col-md-6',
@@ -25,7 +25,7 @@ class NewsletterSubscribeForm extends Form
     {
         parent::buildForm();
         $this
-            ->add('address_category', Field::ENTITY, [
+            ->add('address_category_id', Field::ENTITY, [
 				'label' => 'Adress-Kategorie',
                 'class' => AddressCategory::class,
                 'empty_value'  => 'Bitte wählen ...',

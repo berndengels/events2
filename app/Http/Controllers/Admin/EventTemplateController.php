@@ -10,7 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\EventTemplateRequest;
 use Exception;
-use App\ModelsOld\EventTemplate;
+use App\Models\EventTemplate;
 use App\Forms\EventTemplateForm;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
 

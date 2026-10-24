@@ -11,10 +11,10 @@ namespace App\Http\Controllers\Admin;
 use Exception;
 use Carbon\Carbon;
 use App\Helper\MyDate;
-use App\ModelsOld\Event;
-use App\ModelsOld\User;
-use App\ModelsOld\Video;
-use App\ModelsOld\Images;
+use App\Models\Event;
+use App\Models\AdminUser;
+use App\Models\Video;
+use App\Models\Images;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
@@ -56,7 +56,7 @@ class MainController extends Controller
 	protected $untilValidDate;
 
     /**
-     * @var User|Authenticatable|null
+     * @var AdminUser|Authenticatable|null
      */
     protected $user = null;
 	protected $isAdmin = false;
@@ -67,9 +67,9 @@ class MainController extends Controller
     public function __construct()
     {
 		$this->middleware(function ($request, $next) {
-			$this->user = auth()->user();
+			$this->user = auth('admin')->user();
 			if($this->user) {
-				$this->isAdmin = (bool) $this->user->is_super_admin;
+				$this->isAdmin = true;
 			}
 
 			return $next($request);
@@ -86,8 +86,8 @@ class MainController extends Controller
         if( $modelClass ) {
             $this->entity   = lcfirst(class_basename($modelClass));
             $this->entityPlural = Str::plural($this->entity);
-            $this->addLink  = route('admin.'.$this->entity.'New');
-            $this->listLink = route('admin.'.$this->entity.'List');
+            $this->addLink  = route('admin.'.$this->entity.'New') ?? null;
+            $this->listLink = route('admin.'.$this->entity.'List') ?? null;
             $this->title    = ucfirst($this->entity);
         }
 	}

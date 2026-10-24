@@ -1,8 +1,7 @@
 <?php
 namespace App\Forms;
 
-use App\ModelsOld\MenuItemType;
-//use App\Models\PublicRoute;
+use App\Models\MenuItemType;
 use App\Libs\Routes as MyRoutes;
 use Kris\LaravelFormBuilder\Form;
 use Kris\LaravelFormBuilder\Field;
@@ -11,14 +10,13 @@ class MenuForm extends Form
 {
     protected $formOptions = [
 		'id'		=> 'frmMenu',
-        'url'		=> '/admin/menu/store',
+        'url'		=> '/admin/menus/store',
 		'method'	=> 'POST',
     ];
 
     public function buildForm()
     {
-		$publicRoutes = array_flip(MyRoutes::getPublicRoutes()->toArray());
-        ksort($publicRoutes);
+		$publicRoutes = MyRoutes::getPublicRoutes()->toArray();
 
         $this
             ->add('id', Field::HIDDEN)
@@ -27,7 +25,6 @@ class MenuForm extends Form
             ->add('name', Field::TEXT, [
                 'rules' => 'required',
             ])
-            ->add('css_class', Field::TEXT)
 			->add('icon', Field::TEXT, [
 			])
             ->add('fa_icon', Field::TEXT, [

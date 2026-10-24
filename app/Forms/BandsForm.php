@@ -4,11 +4,11 @@
  *
  * @author    Bernd Engels
  * @created   25.02.19 14:47
- * @copyright Bernd Engels
+ * @copyright Webwerk Berlin GmbH
  */
 namespace App\Forms;
 
-use App\ModelsOld\MusicStyle;
+use App\Models\MusicStyle;
 use Kris\LaravelFormBuilder\Form;
 use Kris\LaravelFormBuilder\Field;
 

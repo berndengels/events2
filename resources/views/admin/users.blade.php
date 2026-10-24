@@ -14,6 +14,7 @@
                 <th scope="col">ID</th>
                 <th scope="col" class="col-sm-auto">@sortablelink('username')</th>
                 <th scope="col" class="d-none d-sm-table-cell">@sortablelink('email')</th>
+                <th scope="col" class="d-none d-sm-table-cell">@sortablelink('musicStyles')</th>
                 <th scope="col" class="d-none d-sm-table-cell">@sortablelink('last_login','Last Login')</th>
                 <th scope="col" class="d-none d-sm-table-cell">@sortablelink('enabled','Aktiv')</th>
                 <th scope="col" colspan="2">#</th>
@@ -23,6 +24,7 @@
                 <td>{{ $item->id }}</td>
                 <td class="col-sm-auto">{{ $item->username }}</td>
                 <td class="d-none d-sm-table-cell">{{ $item->email }}</td>
+                <td class="d-none d-sm-table-cell">{{ $item->musicStyles->count() }}</td>
                 <td class="d-none d-sm-table-cell">@if($item->last_login) {{ $item->last_login->format('d.m.Y H:i') }} @endif</td>
                 <td class="d-none d-sm-table-cell"><i class="@if($item->enabled) ion-md-checkmark-circle-outline text-success @else ion-md-close-circle-outline text-danger @endif"></i></td>
 

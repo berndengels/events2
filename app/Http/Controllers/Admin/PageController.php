@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\PageRequest;
-use App\ModelsOld\Page;
+use App\Models\Page;
 use App\Forms\PageForm;
 use Exception;
 use Illuminate\Auth;

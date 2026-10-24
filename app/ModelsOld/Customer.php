@@ -2,7 +2,7 @@
 namespace App\ModelsOld;
 
 use Eloquent;
-use Laravel\Cashier\Billable;
+//use Laravel\Cashier\Billable;
 use Illuminate\Support\Carbon;
 use Laravel\Cashier\Subscription;
 use Illuminate\Notifications\Notifiable;
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotificationCollection;
-use Gloudemans\Shoppingcart\Contracts\InstanceIdentifier;
+//use Gloudemans\Shoppingcart\Contracts\InstanceIdentifier;
 
 /**
  * App\Models\Customer
@@ -66,9 +66,9 @@ use Gloudemans\Shoppingcart\Contracts\InstanceIdentifier;
  * @property-read Collection|Download[] $downloads
  * @property-read int|null $downloads_count
  */
-class Customer extends Authenticatable implements InstanceIdentifier
+class Customer extends Authenticatable
 {
-    use HasFactory, Notifiable, Billable, HasRoles, HasPermissions, HasRoles;
+    use HasFactory, Notifiable, HasRoles, HasPermissions, HasRoles;
 
     protected $table = 'customers';
     protected $appends = ['resource_url', 'discountRate', 'shippingList', 'shipping'];
@@ -86,44 +86,11 @@ class Customer extends Authenticatable implements InstanceIdentifier
     ];
     protected $guard_name = 'web';
 
-    public function getInstanceIdentifier($options = null)
-    {
-        return $this->email;
-    }
-
-    public function getInstanceGlobalDiscount($options = null)
-    {
-        return 0;
-    }
-
-    public function getDiscountRateAttribute()
-    {
-        return 0;
-    }
-
-    public function getShippingAttribute()
-    {
-        return $this->shippings()->whereIsDefault(true)->first();
-    }
-
-    public function getShippingListAttribute() {
-        if($this->shippings()->whereCustomerId($this->id)->count()) {
-            return implode('<br>', $this->shippings->pluck('name')->toArray());
-        }
-        return null;
-    }
-
-    public function shippings()
-    {
-        return $this->hasMany(Shipping::class, 'customer_id', 'id');
-    }
 
     public function downloads()
     {
         return $this->hasMany(Download::class, 'customer_id', 'id');
     }
-
-    /* ************************ ACCESSOR ************************* */
 
     public function getResourceUrlAttribute()
     {

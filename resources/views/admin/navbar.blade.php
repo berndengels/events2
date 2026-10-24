@@ -54,7 +54,7 @@
 					</div>
 				</li-->
 
-                @if( Auth::user() && 1 === Auth::user()->is_super_admin )
+                @if( Auth::user() && Auth::user()->is_super_admin )
                     {? $view = isset($view) ? $view : '' ?}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdownMedia" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Media</a>
@@ -63,16 +63,12 @@
                             <a class="dropdown-item ajax" href="/admin/services/syncImages" target="_blank">Sync Images</a>
                             <a class="dropdown-item ajax" href="/admin/services/cropImages" target="_blank">Crop Images</a>
                             <a class="dropdown-item ajax" href="/admin/services/sanitizeImageDB" target="_blank">Sanitize Images DB</a>
-                            <a class="dropdown-item ajax" href="/admin/services/syncAudios" target="_blank">Sync Audios</a>
-                            <a class="dropdown-item ajax" href="/admin/services/sanitizeFilePermissions" target="_blank">Set Permissions</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdownReports" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reports</a>
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdownReports" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Infos</a>
                         <div class="dropdown-menu" aria-labelledby="dropdownReports">
-                            <a class="dropdown-item" href="/admin/terminal/{{ $view }}">Terminal</a>
-                            <a class="dropdown-item" href="/admin/services/browserTestReport">BrowserTest Result</a>
-                            <a class="dropdown-item" href="/admin/phpinfo">PHP-Info</a>
+                            <a class="dropdown-item" href="/admin/services/phpinfo">PHP-Info</a>
                         </div>
                     </li>
                 @endif

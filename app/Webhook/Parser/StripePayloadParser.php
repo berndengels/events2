@@ -1,8 +1,8 @@
 <?php
 namespace App\Webhook\Parser;
 
-use App\ModelsOld\Customer;
-use App\ModelsOld\Order;
+use App\Models\Customer;
+use App\Models\Order;
 use Carbon\Carbon;
 
 class StripePayloadParser

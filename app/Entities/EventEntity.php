@@ -188,8 +188,8 @@ class EventEntity extends Entity {
 	/**
 	 * @param mixed $links
 	 */
-	public function setLinks($links) {
-		if('' !== $links) {
+	public function setLinks($links = null) {
+		if($links && '' !== $links) {
 			$this->links = collect(preg_split("/[\n\r]+/", $links));
 		}
 		return $this;

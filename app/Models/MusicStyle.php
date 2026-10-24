@@ -63,7 +63,7 @@ class MusicStyle extends Model
     {
         return $this->belongsToMany(
             AdminUser::class,
-            'user_music_styles'
+            'admin_users_music_style'
         );
     }
 

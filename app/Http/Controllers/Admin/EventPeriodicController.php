@@ -12,7 +12,7 @@ use App\Repositories\EventPeriodicRepository;
 use Cache;
 use Exception;
 use App\Libs\EventDateTime;
-use App\ModelsOld\EventPeriodic;
+use App\Models\EventPeriodic;
 use App\Forms\EventPeriodicForm;
 use Kris\LaravelFormBuilder\FormBuilder;
 use Kris\LaravelFormBuilder\FormBuilderTrait;

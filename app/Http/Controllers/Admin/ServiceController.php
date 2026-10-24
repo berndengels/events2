@@ -10,10 +10,8 @@ namespace App\Http\Controllers\Admin;
 
 use Exception;
 use Carbon\Carbon;
-use App\ModelsOld\Audios;
-use App\ModelsOld\Images;
+use App\Models\Images;
 use Ixudra\Curl\Facades\Curl;
-use App\Helper\FilePermissions;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Spatie\DbDumper\Compressors\GzipCompressor;
@@ -59,7 +57,7 @@ class ServiceController extends MainController
 
 			if(file_exists($file)) {
 				chmod($file, 0755);
-				$name = Carbon::now()->format('YmdHi') . '_schokoladen.sql.gz';
+				$name = Carbon::now()->format('YmdHi') . '_zosch.sql.gz';
 				$content = file_get_contents($file);
 				$type = 'application/gzip';
 				unlink($file);
@@ -71,26 +69,6 @@ class ServiceController extends MainController
 	        return '<pre>' . $e->getTraceAsString() . '</pre>';
         }
     }
-
-	public function browserTestReport()
-	{
-		$imagePath	= public_path() . '/reports/images';
-		$today		= Carbon::create('now');
-
-		$images = collect(scandir($imagePath))->filter(function ($value) {
-			return strrpos($value, '.jpg') ;
-		});
-
-		return view('admin.report', [
-			'title'		=> 'Test-Report ' . $today->format('d.m.Y H:i'),
-			'images'	=> $images,
-		]);
-	}
-
-	public function sanitizeFilePermissions()
-	{
-		FilePermissions::makeWritable();
-	}
 
 	public function makeThumbs()
 	{
@@ -151,8 +129,8 @@ class ServiceController extends MainController
         }
 
         $dbImages   = Images::where('internal_filename','!=','none')->pluck('internal_filename')->toArray();
-        $path       = public_path('/media/images');
-        $remotePath	= 'https://www.schokoladen-mitte.de/media/images';
+        $path       = public_path('/storage/images');
+        $remotePath	= 'https://www.zosch-berlin.de/storage/images';
         $existing	= [];
 
         foreach( scandir($path) as $item ) {
@@ -205,63 +183,6 @@ class ServiceController extends MainController
 			flush();
         }
     }
-
-	public function syncAudios()
-	{
-		if('prod' === config('app.env')) {
-			return;
-		}
-
-		$dbItems = Audios::where('internal_filename','!=','none')
-			->whereIn('extension', ['mp3'])
-			->pluck('internal_filename')
-			->toArray()
-		;
-		$path       = public_path('/media/audios');
-		$remotePath = 'https://www.schokoladen-mitte.de/media/audios';
-		$existing = [];
-
-		foreach( scandir($path) as $item ) {
-			if( preg_match("/\.mp3$/i",$item) ) {
-				$existing[] = basename($item);
-			}
-		}
-
-		$dbItems			= array_unique($dbItems);
-		$existing			= array_unique($existing);
-		$toDownload			= array_diff($dbItems, $existing);
-		$countToDownload	= count($toDownload);
-
-		if( $countToDownload > 0 ) {
-			echo "<h3>to download: $countToDownload</h3>";
-			ob_flush();
-			flush();
-
-			foreach( $toDownload as $index => $item ) {
-				$url	= "$remotePath/$item";
-				$dest	= "$path/$item";
-
-				try {
-					$response = Curl::to($url)->get();
-//					dd($response);
-					file_put_contents($dest, $response);
-					chmod($dest, 0666);
-					echo "$index: $item<br>";
-					ob_flush();
-					flush();
-					usleep(5000);
-				} catch (Exception $e) {
-					echo 'error: ('.$index.' '.$item.'): '.$e->getMessage().'<br>';
-					ob_flush();
-					flush();
-				}
-			}
-		} else {
-			echo "<h3>nothing to download</h3>";
-			ob_flush();
-			flush();
-		}
-	}
 
     public function sanitizeImageDB()
     {
@@ -373,13 +294,13 @@ class ServiceController extends MainController
                         ;
                     }
 
-                    echo "$index crop: $fileName\n";
+                    echo "$index crop: $fileName<br>\n";
 					ob_flush();
 					flush();
                 } catch( Exception $e ) {
 					$msg = $e->getMessage();
 					logger($msg);
-					echo "error: $index can't crop: $fileName: $msg\n";
+					echo "error: $index can't crop: $fileName: $msg<br>\n";
 					ob_flush();
 					flush();
                     Images::where('internal_filename','=',$fileName)->delete();
@@ -425,7 +346,7 @@ class ServiceController extends MainController
 				} catch(Exception $e){
 					$msg = $e->getMessage();
 					logger($msg);
-					echo "error: $index can't convert: $fileName: $msg\n";
+					echo "error: $index can't convert: $fileName: $msg<br>\n";
 					ob_flush();
 					flush();
 					Images::where('internal_filename','=',$fileName)->delete();

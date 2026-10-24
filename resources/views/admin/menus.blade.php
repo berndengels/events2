@@ -1,4 +1,3 @@
-
 @extends('layouts.admin')
 
 @section('content')
@@ -24,7 +23,7 @@
 <script>
     const operationRoute  = '/admin/menus/operation';
 
-    $(function () {
+    $(() => {
         var $tree = $('#tree');
         document.getElementById('frmMenu').reset();
         $tree.jstree({

@@ -1,8 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Libs\PayPal\PayPal;
-use App\Models\AdminUser;
 use Carbon\Carbon;
 use App\Models\Event;
 use App\Helper\MyDate;
@@ -45,7 +43,7 @@ class EventController extends BaseController
             }
             $this->actualEvents = Cache::get($this->cacheEventKey, collect([]));
         }
-    }
+	}
 
 	public function show($date)
 	{

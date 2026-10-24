@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(TelescopeServiceProvider::class);
             $this->app->register(\PrettyRoutes\ServiceProvider::class);
         }
-        $this->app->register(MyWebhookClientServiceProvider::class);
+//        $this->app->register(MyWebhookClientServiceProvider::class);
     }
 
     /**
@@ -51,20 +51,22 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Schema::defaultStringLength(191);
+		Paginator::useBootstrap();
 
-        Blade::directive('brutto', function ($expression) {
-            return "<?php echo \App\Helper\MyMoney::getBrutto($expression); ?>";
-        });
-        Blade::directive('netto', function ($expression) {
-            return "<?php echo \App\Helper\MyMoney::getNetto($expression); ?>";
-        });
-        Blade::directive('nettoRounded', function ($expression) {
-            return "<?php echo \App\Helper\MyMoney::getNettoRounded($expression); ?>";
-        });
-        Blade::directive('round', function ($expression) {
-            return "<?php echo \App\Helper\MyMoney::getRounded($expression); ?>";
-        });
-
+		/*
+				Blade::directive('brutto', function ($expression) {
+					return "<?php echo \App\Helper\MyMoney::getBrutto($expression); ?>";
+				});
+				Blade::directive('netto', function ($expression) {
+					return "<?php echo \App\Helper\MyMoney::getNetto($expression); ?>";
+				});
+				Blade::directive('nettoRounded', function ($expression) {
+					return "<?php echo \App\Helper\MyMoney::getNettoRounded($expression); ?>";
+				});
+				Blade::directive('round', function ($expression) {
+					return "<?php echo \App\Helper\MyMoney::getRounded($expression); ?>";
+				});
+		*/
         Blade::component('inp.text', Text::class);
         Blade::component('inp.email', Email::class);
         Blade::component('inp.date', Date::class);

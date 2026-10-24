@@ -4,10 +4,17 @@ namespace App\Http\Requests;
 
 class UserRequest extends AdminRequest
 {
-    public function validationData()
+	protected function prepareForValidation()
+	{
+		$musicStyles = $this->get('music_styles');
+		$musicStyles = array_map(fn($v) => (int) $v, $musicStyles);
+		$this->request->set('music_styles', $musicStyles);
+	}
+
+	public function validationData()
     {
         return array_merge([
-            'enabled'           => false,
+            'activated'         => false,
             'is_super_admin'    => false
         ], $this->all());
     }
@@ -24,9 +31,9 @@ class UserRequest extends AdminRequest
             'username'  => 'required|min:3|max:50',
             'email'     => (!$id) ? 'required|email|unique:my_user,email' : 'required|email',
             'password'  => (!$id) ? 'required|alpha_num|between:6,20' : 'nullable|alpha_num|between:6,20',
-            'enabled'           => 'boolean',
+            'activated'           => 'boolean',
             'is_super_admin'    => 'boolean',
-            'music_style_id'    => '',
+            'music_styles'    => [],
         ];
     }
 

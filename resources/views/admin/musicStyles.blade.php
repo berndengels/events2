@@ -1,4 +1,3 @@
-
 @extends('layouts.admin')
 
 @section('content')
@@ -19,7 +18,6 @@
                 <td class="col-sm-auto">{{ $item->name }}</td>
                 <td class="col-sm-auto">{{ $item->users->count() }}</td>
                 <td class="d-none d-sm-table-cell">{{ $item->slug }}</td>
-
                 @include('admin.templates.action')
             </tr>
         @endforeach

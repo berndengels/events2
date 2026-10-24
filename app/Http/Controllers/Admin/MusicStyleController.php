@@ -13,7 +13,7 @@ use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\ModelsOld\MusicStyle;
+use App\Models\MusicStyle;
 use App\Forms\MusicStyleForm;
 use Illuminate\Support\Facades\DB;
 use Kris\LaravelFormBuilder\FormBuilder;

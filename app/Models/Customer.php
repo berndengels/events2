@@ -13,7 +13,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Kyslik\ColumnSortable\Sortable;
-use Laravel\Cashier\Billable;
+//use Laravel\Cashier\Billable;
 use Laravel\Cashier\Subscription;
 
 /**
@@ -55,7 +55,7 @@ use Laravel\Cashier\Subscription;
  */
 class Customer extends Authenticatable
 {
-    use Notifiable, Sortable, Billable;
+    use Notifiable, Sortable;
 
     protected $table = 'customer';
     public $sortable = [

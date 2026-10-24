@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Eloquent;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -70,6 +70,13 @@ class Images extends Media
         'filesize'  => 'integer',
     ];
 
+
+	protected function url(): Attribute
+	{
+		return Attribute::make(
+			get: fn () => public_path('/storage/images/' . $this->internal_filename),
+		);
+	}
     /**
      * @return int
      */

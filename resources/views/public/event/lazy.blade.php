@@ -14,7 +14,7 @@
 @endsection
 
 @section('content')
-    <div class="eventContainer col-sm-11 col-md-6 mt-1 ml-lg-4">
+    <div class="eventContainer col-sm-11 col-md-6 mt-3 ml-lg-4">
         @if( $data->count() )
             @foreach ($data as $event)
                 <div class="event col-12 lazy">

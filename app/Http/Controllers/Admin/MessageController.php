@@ -10,7 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Forms\BandsForm;
 use App\Forms\Filter\MessageFilterForm;
-use App\ModelsOld\Message;
+use App\Models\Message;
 use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;

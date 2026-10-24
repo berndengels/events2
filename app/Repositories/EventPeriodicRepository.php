@@ -32,6 +32,7 @@ class EventPeriodicRepository {
             ->where('is_published', 1)
         ;
         $events = $this->getMergedEntities($entities, $formated, $isPublic);
+
         return $events;
     }
 

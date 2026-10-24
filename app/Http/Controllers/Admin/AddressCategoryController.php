@@ -13,7 +13,7 @@ use App\Entities\Newsletter\ContactEntity;
 use App\Http\Requests\AddressCategoryRequest;
 use Exception;
 use Illuminate\Http\Request;
-use App\ModelsOld\AddressCategory;
+use App\Models\AddressCategory;
 use App\Forms\AddressCategoryForm;
 use App\Repositories\NewsletterRepository;
 use Illuminate\Support\Facades\Validator;

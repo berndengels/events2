@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Cache;
 use Request;
 use Response;
 use Carbon\Carbon;
-use App\ModelsOld\Menu;
+use App\Models\Menu;
 use App\Forms\MenuForm;
 use App\Repositories\MenuRepository;
 use App\Repositories\Tree;

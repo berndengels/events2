@@ -14,6 +14,7 @@ return [
     */
 
     'default' => env('FILESYSTEM_DRIVER', 'local'),
+	'images'    => public_path('/storage/images'),
 
     /*
     |--------------------------------------------------------------------------
@@ -46,48 +47,31 @@ return [
             'driver' => 'local',
             'root' => storage_path('app'),
         ],
-        'uploads' => [
-            'driver' => 'local',
-            'root'   => storage_path('uploads'),
-        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
         ],
-        'media' => [
-            'driver' => 'local',
-            'root' => storage_path('app/media'),
-            'url' => env('APP_URL').'/storage/',
-            'visibility' => 'media',
-        ],
-        'media_private' => [
-            'driver' => 'local',
-            'root' => storage_path('app/private/media'),
-            'url' => env('APP_URL').'/storage/media_private',
-        ],
-        'images' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public/media/images'),
-            'url' => env('APP_URL').'/storage/media/images',
-            'visibility' => 'public',
-        ],
-/*
-        'audios' => [
-            'driver' => 'local',
-            'root' => storage_path('app/media/audios'),
-            'url' => env('APP_URL').'/storage/media/audios',
-            'visibility' => 'public',
-        ],
-        'videos' => [
-            'driver' => 'local',
-            'root' => storage_path('app/media/videos'),
-            'url' => env('APP_URL').'/storage/media/videos',
-            'visibility' => 'public',
-        ],
-*/
-        's3' => [
+		'image_upload' => [
+			'driver' => 'local',
+			'root' => public_path('storage/images'),
+			'webRoot'   => '/storage/images',
+			'visibility' => 'public',
+		],
+		'image_upload_cropped' => [
+			'driver' => 'local',
+			'root' => public_path('storage/images/cropped'),
+			'webRoot'   => '/storage/images/cropped',
+			'visibility' => 'public',
+		],
+		'upload' => [
+			'driver' => 'local',
+			'root' => public_path('uploads'),
+			'webRoot'   => '/uploads',
+			'visibility' => 'public',
+		],
+		's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
